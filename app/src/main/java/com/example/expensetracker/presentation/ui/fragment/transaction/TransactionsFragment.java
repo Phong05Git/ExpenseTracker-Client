@@ -20,6 +20,7 @@ import com.example.expensetracker.domain.model.Transaction;
 import com.example.expensetracker.presentation.adapter.TransactionAdapter;
 import com.example.expensetracker.presentation.ui.bottomsheet.AddEditTransactionBottomSheet;
 import com.example.expensetracker.presentation.ui.bottomsheet.FilterTransactionsBottomSheet;
+import com.example.expensetracker.presentation.ui.bottomsheet.MonthPickerBottomSheet;
 import com.example.expensetracker.presentation.ui.calendar.TransactionCalendarView;
 import com.example.expensetracker.presentation.viewmodel.CategoryViewModel;
 import com.example.expensetracker.presentation.viewmodel.TransactionViewModel;
@@ -65,10 +66,17 @@ public final class TransactionsFragment extends Fragment {
         viewModel = new ViewModelProvider(this).get(TransactionViewModel.class);
         categoryViewModel = new ViewModelProvider(requireActivity()).get(CategoryViewModel.class);
 
-        getParentFragmentManager().setFragmentResultListener(
-                AddEditTransactionBottomSheet.TRANSACTION_CHANGED_RESULT,
-                getViewLifecycleOwner(),
-                (requestKey, result) -> refreshAfterTransactionChanged());
+        // Observe Activity-scoped ViewModel: detects transactions created via the FAB in
+        // MainActivity (which uses the Activity ViewModel, not this Fragment's ViewModel).
+        TransactionViewModel activityViewModel =
+                new ViewModelProvider(requireActivity()).get(TransactionViewModel.class);
+
+        activityViewModel.getTransactionAction().observe(getViewLifecycleOwner(), resource -> {
+            if (resource != null
+                    && resource.getStatus() == Resource.Status.SUCCESS) {
+                refreshAfterTransactionChanged();
+            }
+        });
 
         calendarView = view.findViewById(R.id.calendarView);
         tvCurrentMonth = view.findViewById(R.id.tvCurrentMonth);
@@ -130,6 +138,20 @@ public final class TransactionsFragment extends Fragment {
                 transactionAdapter.setItems(resource.getData());
             }
         });
+
+        // Refresh after edit/update transaction (uses Fragment-scoped ViewModel)
+        viewModel.getTransactionAction().observe(getViewLifecycleOwner(), resource -> {
+            if (resource != null && resource.getStatus() == Resource.Status.SUCCESS) {
+                refreshAfterTransactionChanged();
+            }
+        });
+
+        // Refresh after delete transaction (uses Fragment-scoped ViewModel)
+        viewModel.getDeleteAction().observe(getViewLifecycleOwner(), resource -> {
+            if (resource != null && resource.getStatus() == Resource.Status.SUCCESS) {
+                refreshAfterTransactionChanged();
+            }
+        });
     }
 
     private void observeCategories() {
@@ -153,6 +175,35 @@ public final class TransactionsFragment extends Fragment {
         btnPreviousMonth.setOnClickListener(v -> changeMonth(-1));
         btnNextMonth.setOnClickListener(v -> changeMonth(1));
         btnTransactionFilter.setOnClickListener(v -> showFilterBottomSheet());
+
+        tvCurrentMonth.setOnClickListener(v -> showMonthPickerBottomSheet());
+    }
+
+    private void showMonthPickerBottomSheet() {
+        int month = displayedMonth.get(Calendar.MONTH) + 1;
+        int year = displayedMonth.get(Calendar.YEAR);
+
+        MonthPickerBottomSheet bottomSheet = MonthPickerBottomSheet.newInstance(month, year);
+
+        bottomSheet.setOnMonthSelectedListener((selectedMonth, selectedYear) -> {
+            displayedMonth.set(Calendar.YEAR, selectedYear);
+            displayedMonth.set(Calendar.MONTH, selectedMonth - 1);
+            displayedMonth.set(Calendar.DAY_OF_MONTH, 1);
+
+            calendarView.setMonth(displayedMonth);
+            updateMonthTitle();
+            loadCurrentMonth();
+
+            if (hasActiveFilter()) {
+                applyActiveFilter();
+            } else if (isSameMonth(selectedDate, displayedMonth)) {
+                loadSelectedDate();
+            } else {
+                transactionAdapter.setItems(null);
+            }
+        });
+
+        bottomSheet.show(getParentFragmentManager(), "MonthPickerBottomSheet");
     }
 
     private void showEditTransactionBottomSheet(Transaction transaction) {

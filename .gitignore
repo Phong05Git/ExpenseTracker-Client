@@ -21,3 +21,4 @@ app/release/
 .gradle/
 build/
 */build/
+.md

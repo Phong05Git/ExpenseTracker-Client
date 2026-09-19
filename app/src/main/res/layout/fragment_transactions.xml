@@ -59,7 +59,14 @@
             android:gravity="center"
             android:textColor="@color/light_text_primary"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:drawableEnd="@drawable/ic_arrow_drop_down"
+            app:drawableTint="@color/light_text_primary" />
 
         <ImageButton
             android:id="@+id/btnNextMonth"

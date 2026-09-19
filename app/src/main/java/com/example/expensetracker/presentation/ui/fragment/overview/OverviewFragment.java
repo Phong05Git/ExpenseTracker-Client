@@ -100,7 +100,7 @@ public class OverviewFragment extends Fragment {
 
         popupMenu.getMenu().add(0, OPTION_THIS_MONTH, 0, "Tháng này");
         popupMenu.getMenu().add(0, OPTION_THIS_WEEK, 1, "Tuần này");
-        popupMenu.getMenu().add(0, OPTION_THIS_YEAR, 2, "Năm nay");
+        popupMenu.getMenu().add(0, OPTION_THIS_YEAR, 2, "Năm này");
         popupMenu.getMenu().add(0, OPTION_CUSTOM, 3, "Tùy chỉnh thời gian");
 
         popupMenu.setOnMenuItemClickListener(item -> {
@@ -226,7 +226,7 @@ public class OverviewFragment extends Fragment {
     private void updatePeriodSelectorText() {
         switch (selectedOption) {
             case OPTION_THIS_WEEK -> tvSelectedPeriod.setText("Tuần này");
-            case OPTION_THIS_YEAR -> tvSelectedPeriod.setText("Năm nay");
+            case OPTION_THIS_YEAR -> tvSelectedPeriod.setText("Năm này");
             case OPTION_CUSTOM -> {
                 if (customStartDate != null && customEndDate != null) {
                     tvSelectedPeriod.setText(
