@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_background">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/top_bar"
+        android:layout_width="0dp"
+        android:layout_height="56dp"
+        android:background="@color/light_surface"
+        android:elevation="4dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/textAppTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:text="ExpenseTracker"
+            android:textColor="@color/light_text_primary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/iconAccount" />
+
+        <ImageView
+            android:id="@+id/iconAccount"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Tài khoản"
+            android:padding="8dp"
+            android:src="@drawable/ic_person"
+            app:tint="@color/light_text_primary"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/nav_host_fragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/top_bar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottom_bar" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bottom_bar"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:background="@color/light_surface"
+        android:elevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:id="@+id/navOverview"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/navTransactions"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/iconOverview"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Tổng quan"
+                android:src="@drawable/ic_chart"
+                app:tint="@color/primary_green" />
+
+            <TextView
+                android:id="@+id/labelOverview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Tổng quan"
+                android:textColor="@color/primary_green"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navTransactions"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintStart_toEndOf="@id/navOverview"
+            app:layout_constraintEnd_toStartOf="@id/fabContainer"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/iconTransactions"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Giao dịch"
+                android:src="@drawable/ic_calendar"
+                app:tint="@color/light_text_secondary" />
+
+            <TextView
+                android:id="@+id/labelTransactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Giao dịch"
+                android:textColor="@color/light_text_secondary"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/fabContainer"
+            android:layout_width="72dp"
+            android:layout_height="match_parent"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            app:layout_constraintStart_toEndOf="@id/navTransactions"
+            app:layout_constraintEnd_toStartOf="@id/navCategories"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/fabAdd"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:contentDescription="Thêm giao dịch"
+                android:src="@drawable/ic_add"
+                app:backgroundTint="@color/primary_green"
+                app:elevation="8dp"
+                app:maxImageSize="24dp"
+                app:tint="@android:color/white" />
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/navCategories"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintStart_toEndOf="@id/fabContainer"
+            app:layout_constraintEnd_toStartOf="@id/navBudgets"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/iconCategories"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Danh mục"
+                android:src="@drawable/ic_tag"
+                app:tint="@color/light_text_secondary" />
+
+            <TextView
+                android:id="@+id/labelCategories"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Danh mục"
+                android:textColor="@color/light_text_secondary"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/navBudgets"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            app:layout_constraintStart_toEndOf="@id/navCategories"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
+
+            <ImageView
+                android:id="@+id/iconBudgets"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="Ngân sách"
+                android:src="@drawable/ic_budget_wallet"
+                app:tint="@color/light_text_secondary" />
+
+            <TextView
+                android:id="@+id/labelBudgets"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Ngân sách"
+                android:textColor="@color/light_text_secondary"
+                android:textSize="12sp" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

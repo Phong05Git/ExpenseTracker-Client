@@ -1,0 +1,11 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.ExpenseTracker" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary_green</item>
+        <item name="colorSurface">@color/light_surface</item>
+        <item name="colorOnSurface">@color/light_text_primary</item>
+        <item name="android:windowBackground">@color/light_background</item>
+    </style>
+
+    <style name="Theme.ExpenseTracker" parent="Base.Theme.ExpenseTracker" />
+</resources>
