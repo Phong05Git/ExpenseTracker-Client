@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.expensetracker.R;
+import com.example.expensetracker.domain.common.Resource;
 import com.example.expensetracker.domain.model.Transaction;
 import com.example.expensetracker.presentation.adapter.TransactionAdapter;
 import com.example.expensetracker.presentation.ui.bottomsheet.AddEditTransactionBottomSheet;
@@ -104,11 +105,10 @@ public final class TransactionsFragment extends Fragment {
 
     private void observeViewModel() {
         viewModel.getMonthTransactions().observe(getViewLifecycleOwner(), resource -> {
-            if (resource == null || resource.getData() == null) {
-                return;
+            if (resource == null) return;
+            if (resource.getStatus() == Resource.Status.SUCCESS) {
+                calendarView.setTransactions(resource.getData());
             }
-
-            calendarView.setTransactions(resource.getData());
         });
 
         viewModel.getTransactions().observe(getViewLifecycleOwner(), resource -> {
