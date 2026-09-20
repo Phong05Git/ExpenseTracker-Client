@@ -21,11 +21,11 @@ public final class ValidationUtils {
 
     public static String amountError(double amount, String fieldName) {
         if (amount <= MINIMUM_AMOUNT) {
-            return fieldName + " phải lớn hơn 999.";
+            return fieldName + " tối thiểu là 1000.";
         }
 
         if (amount > MAXIMUM_AMOUNT) {
-            return fieldName + " không được vượt quá 9.999.999.999.999,99.";
+            return fieldName + " không được vượt quá 9.999.999.999.999.";
         }
 
         return null;
