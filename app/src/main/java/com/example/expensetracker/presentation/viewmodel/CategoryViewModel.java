@@ -110,8 +110,7 @@ public class CategoryViewModel extends ViewModel {
                 .subscribe(
                         resource -> categoryAction.setValue(resource),
                         throwable -> categoryAction.setValue(
-                                Resource.<Category>error(
-                                        "Lỗi tạo danh mục.")));
+                                Resource.<Category>error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi tạo danh mục."))));
 
         disposables.add(categoryActionRequest);
     }
@@ -140,8 +139,7 @@ public class CategoryViewModel extends ViewModel {
                 .subscribe(
                         resource -> categoryAction.setValue(resource),
                         throwable -> categoryAction.setValue(
-                                Resource.<Category>error(
-                                        "Lỗi cập nhật danh mục.")));
+                                Resource.<Category>error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi cập nhật danh mục."))));
 
         disposables.add(categoryActionRequest);
     }
@@ -159,8 +157,7 @@ public class CategoryViewModel extends ViewModel {
                 .subscribe(
                         resource -> deleteAction.setValue(resource),
                         throwable -> deleteAction.setValue(
-                                Resource.<Boolean>error(
-                                        "Lỗi xóa danh mục.")));
+                                Resource.<Boolean>error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi xóa danh mục."))));
 
         disposables.add(deleteActionRequest);
     }
@@ -184,3 +181,4 @@ public class CategoryViewModel extends ViewModel {
         super.onCleared();
     }
 }
+

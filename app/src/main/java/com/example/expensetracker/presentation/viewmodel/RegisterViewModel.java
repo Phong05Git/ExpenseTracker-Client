@@ -100,25 +100,15 @@ public final class RegisterViewModel extends ViewModel {
 
     private String getErrorMessage(Throwable throwable) {
         if (throwable instanceof HttpException) {
-            HttpException httpException =
-                    (HttpException) throwable;
-
+            HttpException httpException = (HttpException) throwable;
             if (httpException.code() == 400) {
                 return "Thông tin đăng ký không hợp lệ.";
             }
-
             if (httpException.code() == 409) {
                 return "Tên đăng nhập hoặc email đã được sử dụng.";
             }
-
-            return "Không thể đăng ký. Vui lòng thử lại.";
         }
-
-        if (throwable instanceof IOException) {
-            return "Không thể kết nối đến máy chủ.";
-        }
-
-        return "Đăng ký thất bại. Vui lòng thử lại.";
+        return com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Không thể đăng ký. Vui lòng thử lại.");
     }
 
     @Override

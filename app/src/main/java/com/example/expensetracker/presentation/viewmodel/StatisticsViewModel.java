@@ -66,8 +66,7 @@ public class StatisticsViewModel extends ViewModel {
                                 statistics::setValue,
                                 throwable ->
                                         statistics.setValue(
-                                                Resource.error(
-                                                        "Lỗi tải dữ liệu thống kê.")));
+                                                Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi tải dữ liệu thống kê."))));
 
         disposables.add(
                 statisticsRequest);

@@ -69,25 +69,15 @@ public final class LoginViewModel extends ViewModel {
 
     private String getErrorMessage(Throwable throwable) {
         if (throwable instanceof HttpException) {
-            HttpException httpException =
-                    (HttpException) throwable;
-
+            HttpException httpException = (HttpException) throwable;
             if (httpException.code() == 401) {
                 return "Tên đăng nhập hoặc mật khẩu không chính xác.";
             }
-
             if (httpException.code() == 400) {
                 return "Thông tin đăng nhập không hợp lệ.";
             }
-
-            return "Không thể đăng nhập. Vui lòng thử lại.";
         }
-
-        if (throwable instanceof IOException) {
-            return "Không thể kết nối đến máy chủ.";
-        }
-
-        return "Đăng nhập thất bại. Vui lòng thử lại.";
+        return com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Không thể đăng nhập. Vui lòng thử lại.");
     }
 
     @Override

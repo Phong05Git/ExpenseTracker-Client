@@ -131,8 +131,7 @@ public class TransactionViewModel extends ViewModel {
                                 },
                                 throwable -> {
                                     monthTransactions.setValue(
-                                            Resource.error(
-                                                    "Lỗi tải dữ liệu lịch."));
+                                            Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi tải dữ liệu lịch.")));
                                 });
 
         disposables.add(monthRequest);
@@ -173,8 +172,7 @@ public class TransactionViewModel extends ViewModel {
                                 },
                                 throwable -> {
                                     filteredTransactions.setValue(
-                                            Resource.error(
-                                                    "Lỗi lọc giao dịch."));
+                                            Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi lọc giao dịch.")));
                                 });
 
         disposables.add(filterRequest);
@@ -204,8 +202,7 @@ public class TransactionViewModel extends ViewModel {
                                 },
                                 throwable -> {
                                     transactions.setValue(
-                                            Resource.error(
-                                                    "Lỗi tải giao dịch trong ngày."));
+                                            Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi tải giao dịch trong ngày.")));
                                 });
 
         disposables.add(dateRequest);
@@ -246,8 +243,7 @@ public class TransactionViewModel extends ViewModel {
                                 },
                                 throwable -> {
                                     transactionAction.setValue(
-                                            Resource.error(
-                                                    "Lỗi thêm giao dịch."));
+                                            Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi thêm giao dịch.")));
                                 });
 
         disposables.add(
@@ -289,8 +285,7 @@ public class TransactionViewModel extends ViewModel {
                                 },
                                 throwable -> {
                                     transactionAction.setValue(
-                                            Resource.error(
-                                                    "Lỗi cập nhật giao dịch."));
+                                            Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi cập nhật giao dịch.")));
                                 });
 
         disposables.add(
@@ -321,8 +316,7 @@ public class TransactionViewModel extends ViewModel {
                                 },
                                 throwable -> {
                                     deleteAction.setValue(
-                                            Resource.error(
-                                                    "Lỗi xóa giao dịch."));
+                                            Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi xóa giao dịch.")));
                                 });
 
         disposables.add(

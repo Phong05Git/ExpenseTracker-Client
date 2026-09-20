@@ -74,7 +74,7 @@ public class BudgetViewModel extends ViewModel {
                 .subscribe(
                         resource -> budgets.setValue(resource),
                         throwable -> budgets.setValue(
-                                Resource.error("Lỗi tải danh sách ngân sách.")));
+                                Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi tải danh sách ngân sách."))));
 
         disposables.add(loadRequest);
     }
@@ -94,7 +94,7 @@ public class BudgetViewModel extends ViewModel {
                 .subscribe(
                         resource -> budgetAction.setValue(resource),
                         throwable -> budgetAction.setValue(
-                                Resource.error("Lỗi tạo ngân sách.")));
+                                Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi tạo ngân sách."))));
 
         disposables.add(budgetActionRequest);
     }
@@ -115,7 +115,7 @@ public class BudgetViewModel extends ViewModel {
                 .subscribe(
                         resource -> budgetAction.setValue(resource),
                         throwable -> budgetAction.setValue(
-                                Resource.error("Lỗi cập nhật ngân sách.")));
+                                Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi cập nhật ngân sách."))));
 
         disposables.add(budgetActionRequest);
     }
@@ -131,7 +131,7 @@ public class BudgetViewModel extends ViewModel {
                 .subscribe(
                         resource -> deleteAction.setValue(resource),
                         throwable -> deleteAction.setValue(
-                                Resource.error("Lỗi xóa ngân sách.")));
+                                Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi xóa ngân sách."))));
 
         disposables.add(deleteActionRequest);
     }

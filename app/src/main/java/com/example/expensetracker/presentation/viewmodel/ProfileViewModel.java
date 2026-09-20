@@ -95,29 +95,18 @@ public final class ProfileViewModel extends ViewModel {
 
     private String getErrorMessage(Throwable throwable) {
         if (throwable instanceof HttpException) {
-            HttpException httpException =
-                    (HttpException) throwable;
-
+            HttpException httpException = (HttpException) throwable;
             if (httpException.code() == 400) {
                 return "Thông tin hồ sơ không hợp lệ.";
             }
-
             if (httpException.code() == 401) {
                 return "Phiên đăng nhập đã hết hạn.";
             }
-
             if (httpException.code() == 409) {
                 return "Email đã được sử dụng.";
             }
-
-            return "Không thể cập nhật hồ sơ. Vui lòng thử lại.";
         }
-
-        if (throwable instanceof IOException) {
-            return "Không thể kết nối đến máy chủ.";
-        }
-
-        return "Đã xảy ra lỗi. Vui lòng thử lại.";
+        return com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Không thể cập nhật hồ sơ. Vui lòng thử lại.");
     }
 
     @Override
