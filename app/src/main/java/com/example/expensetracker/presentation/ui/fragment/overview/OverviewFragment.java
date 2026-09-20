@@ -52,6 +52,8 @@ public class OverviewFragment extends Fragment {
     private Calendar customEndDate;
     private boolean statisticsSelected;
 
+    private io.reactivex.rxjava3.disposables.CompositeDisposable disposables = new io.reactivex.rxjava3.disposables.CompositeDisposable();
+
     @Nullable
     @Override
     public View onCreateView(
@@ -86,12 +88,33 @@ public class OverviewFragment extends Fragment {
             }
         });
 
+        disposables.add(
+                com.example.expensetracker.util.RxBus.getInstance()
+                        .toObservable()
+                        .observeOn(io.reactivex.rxjava3.android.schedulers.AndroidSchedulers.mainThread())
+                        .subscribe(event -> {
+                            if (event instanceof com.example.expensetracker.util.TransactionUpdatedEvent) {
+                                if (statisticsSelected) {
+                                    showStatistics();
+                                } else {
+                                    showOverview();
+                                }
+                            }
+                        })
+        );
+
         tabOverview.setOnClickListener(v -> showOverview());
         tabStatistics.setOnClickListener(v -> showStatistics());
         periodSelector.setOnClickListener(v -> showPeriodDropdown());
 
         updatePeriodSelectorText();
         showOverview();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        disposables.clear();
     }
 
     @Override

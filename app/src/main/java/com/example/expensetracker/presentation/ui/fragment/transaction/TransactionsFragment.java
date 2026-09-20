@@ -53,6 +53,8 @@ public final class TransactionsFragment extends Fragment {
     private Integer activeType;
     private String activeKeyword;
 
+    private io.reactivex.rxjava3.disposables.CompositeDisposable disposables = new io.reactivex.rxjava3.disposables.CompositeDisposable();
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -77,6 +79,17 @@ public final class TransactionsFragment extends Fragment {
                 refreshAfterTransactionChanged();
             }
         });
+
+        disposables.add(
+                com.example.expensetracker.util.RxBus.getInstance()
+                        .toObservable()
+                        .observeOn(io.reactivex.rxjava3.android.schedulers.AndroidSchedulers.mainThread())
+                        .subscribe(event -> {
+                            if (event instanceof com.example.expensetracker.util.TransactionUpdatedEvent) {
+                                refreshAfterTransactionChanged();
+                            }
+                        })
+        );
 
         calendarView = view.findViewById(R.id.calendarView);
         tvCurrentMonth = view.findViewById(R.id.tvCurrentMonth);
@@ -109,6 +122,12 @@ public final class TransactionsFragment extends Fragment {
         categoryViewModel.loadCategories();
         loadCurrentMonth();
         loadSelectedDate();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        disposables.clear();
     }
 
     private void observeViewModel() {

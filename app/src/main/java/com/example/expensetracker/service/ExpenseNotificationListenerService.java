@@ -175,6 +175,9 @@ public final class ExpenseNotificationListenerService
                         "Đã tự động tạo giao dịch từ notification.");
             }
 
+            com.example.expensetracker.util.RxBus.getInstance()
+                    .publish(new com.example.expensetracker.util.TransactionUpdatedEvent());
+
             return;
         }
 
