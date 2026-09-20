@@ -26,8 +26,7 @@ public class DateRangePickerBottomSheet extends BottomSheetDialogFragment {
         void onDateRangeConfirmed(Calendar startDate, Calendar endDate);
     }
 
-    private TextView tvSelectedMonth;
-    private TextView tvSelectedYear;
+    private TextView tvCurrentMonth;
     private TextView tvStartDate;
     private TextView tvEndDate;
     private MaterialButton buttonCancel;
@@ -79,8 +78,7 @@ public class DateRangePickerBottomSheet extends BottomSheetDialogFragment {
     }
 
     private void initializeViews(View view) {
-        tvSelectedMonth = view.findViewById(R.id.tvSelectedMonth);
-        tvSelectedYear = view.findViewById(R.id.tvSelectedYear);
+        tvCurrentMonth = view.findViewById(R.id.tvCurrentMonth);
         tvStartDate = view.findViewById(R.id.tvStartDate);
         tvEndDate = view.findViewById(R.id.tvEndDate);
         buttonCancel = view.findViewById(R.id.buttonCancelDateRange);
@@ -134,8 +132,7 @@ public class DateRangePickerBottomSheet extends BottomSheetDialogFragment {
     private void setupListeners() {
         calendarView.setOnDateSelectedListener(this::onDateSelected);
 
-        tvSelectedMonth.setOnClickListener(v -> showMonthPicker());
-        tvSelectedYear.setOnClickListener(v -> showMonthPicker());
+        tvCurrentMonth.setOnClickListener(v -> showMonthPicker());
 
         buttonCancel.setOnClickListener(v -> dismiss());
         buttonConfirm.setOnClickListener(v -> confirmSelection());
@@ -230,8 +227,7 @@ public class DateRangePickerBottomSheet extends BottomSheetDialogFragment {
             month = month.substring(0, 1).toUpperCase(Locale.getDefault()) + month.substring(1);
         }
 
-        tvSelectedMonth.setText(month);
-        tvSelectedYear.setText(String.valueOf(displayedMonth.get(Calendar.YEAR)));
+        tvCurrentMonth.setText(month + " " + displayedMonth.get(Calendar.YEAR));
     }
 
     private void updateDateFields() {

@@ -68,7 +68,6 @@ public class OverviewFragment extends Fragment {
             @Nullable Bundle savedInstanceState) {
 
         super.onViewCreated(view, savedInstanceState);
-
         viewModel = new ViewModelProvider(this).get(OverviewViewModel.class);
 
         overviewContent = view.findViewById(R.id.overviewContent);
@@ -93,6 +92,18 @@ public class OverviewFragment extends Fragment {
 
         updatePeriodSelectorText();
         showOverview();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            if (statisticsSelected) {
+                showStatistics();
+            } else {
+                showOverview();
+            }
+        }
     }
 
     private void showPeriodDropdown() {
@@ -252,6 +263,9 @@ public class OverviewFragment extends Fragment {
 
         tabOverview.setTextColor(statisticsSelected ? inactive : selected);
         tabStatistics.setTextColor(statisticsSelected ? selected : inactive);
+
+        tabOverview.setBackgroundResource(statisticsSelected ? R.drawable.bg_tab_button_unselected : R.drawable.bg_tab_button_selected);
+        tabStatistics.setBackgroundResource(statisticsSelected ? R.drawable.bg_tab_button_selected : R.drawable.bg_tab_button_unselected);
     }
 
     private void displayOverview(StatisticsData data) {

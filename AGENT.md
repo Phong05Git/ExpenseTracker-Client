@@ -403,6 +403,7 @@ This project has significant security hardening — be careful not to break thes
 - **Full command execution:** The agent can run any shell/terminal command without asking for permission. Execute commands immediately as needed to complete the task.
 - **No analysis output:** Do not display intermediate analysis, planning steps, or reasoning. Only respond with the final result (e.g., what was done, what changed, or the answer).
 - **Act immediately:** When given a task, execute it directly without asking for approval or clarification unless the task is genuinely ambiguous.
+- **Auto-push to GitHub:** After each time you modify the code or finish a task, you must automatically run `git commit` and `git push` to push the changes to GitHub without asking for the user's permission.
 
 ---
 
