@@ -1,44 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_background"
-    android:fillViewport="true">
+    android:background="@color/color_background"
+    android:clipToPadding="false"
+    android:fillViewport="true"
+    android:scrollbars="none">
 
-    ```
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingStart="20dp"
+        android:paddingTop="20dp"
+        android:paddingEnd="20dp"
+        android:paddingBottom="28dp">
 
+        <!-- Screen heading -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Tổng quan"
-            android:textColor="@color/light_text_primary"
-            android:textSize="24sp"
+            android:textColor="@color/color_on_surface"
+            android:textSize="26sp"
             android:textStyle="bold" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Theo dõi tình hình tài chính của bạn"
+            android:textColor="@color/color_on_surface_variant"
+            android:textSize="14sp" />
+
+        <!-- Overview / Statistics tabs -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal">
+            android:layout_marginTop="20dp"
+            android:background="@color/color_surface_variant"
+            android:orientation="horizontal"
+            android:padding="4dp">
 
             <TextView
                 android:id="@+id/tabOverview"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginEnd="4dp"
-                android:background="@drawable/bg_tab_button"
+                android:background="@drawable/bg_tab_button_selected"
                 android:gravity="center"
                 android:text="Tổng quan"
-                android:textColor="@color/primary_green"
+                android:textColor="@color/color_primary"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -47,26 +61,26 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:layout_marginStart="4dp"
-                android:background="@drawable/bg_tab_button"
+                android:background="@drawable/bg_tab_button_unselected"
                 android:gravity="center"
                 android:text="Thống kê"
-                android:textColor="@color/light_text_secondary"
+                android:textColor="@color/color_on_surface_variant"
                 android:textSize="14sp" />
 
         </LinearLayout>
 
+        <!-- Period selector -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/periodSelector"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="16dp"
             android:clickable="true"
             android:focusable="true"
-            app:cardBackgroundColor="@color/light_surface"
-            app:cardCornerRadius="10dp"
+            app:cardBackgroundColor="@color/color_surface"
+            app:cardCornerRadius="14dp"
             app:cardElevation="0dp"
-            app:strokeColor="@color/light_text_secondary"
+            app:strokeColor="@color/color_outline_variant"
             app:strokeWidth="1dp">
 
             <LinearLayout
@@ -77,39 +91,50 @@
                 android:paddingStart="16dp"
                 android:paddingEnd="16dp">
 
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="Thời gian"
+                    android:src="@drawable/ic_calendar"
+                    app:tint="@color/color_primary" />
+
                 <TextView
                     android:id="@+id/tvSelectedPeriod"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
                     android:layout_weight="1"
                     android:text="Tháng này"
-                    android:textColor="@color/light_text_primary"
-                    android:textSize="14sp" />
+                    android:textColor="@color/color_on_surface"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="▼"
-                    android:textColor="@color/light_text_secondary"
-                    android:textSize="12sp" />
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:contentDescription="Chọn khoảng thời gian"
+                    android:src="@drawable/ic_arrow_drop_down"
+                    app:tint="@color/color_on_surface_variant" />
 
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- Overview content -->
         <LinearLayout
             android:id="@+id/overviewContent"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Net cash flow card -->
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                app:cardBackgroundColor="@color/primary_green"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="1dp">
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@color/color_primary"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="0dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -117,107 +142,162 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <LinearLayout
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="CHÊNH LỆCH THU - CHI"
+                        android:textColor="#D8F3DF"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvBalance"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal">
+                        android:layout_marginTop="12dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:text="0 ₫"
+                        android:textColor="@android:color/white"
+                        android:textSize="30sp"
+                        android:textStyle="bold" />
 
-                        <TextView
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:text="Số dư"
-                            android:textColor="@android:color/white"
-                            android:textSize="14sp" />
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="18dp"
+                        android:layout_marginBottom="12dp"
+                        android:background="#55FFFFFF" />
 
-                        <TextView
-                            android:id="@+id/tvBalance"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="0 ₫"
-                            android:textColor="@android:color/white"
-                            android:textSize="22sp"
-                            android:textStyle="bold" />
-
-                    </LinearLayout>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Tổng thu nhập trừ đi tổng chi tiêu trong khoảng thời gian đã chọn."
+                        android:textColor="#E4F5E8"
+                        android:textSize="12sp" />
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
 
+            <!-- Income and expense summary -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:orientation="horizontal">
 
+                <!-- Income card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
-                    android:layout_height="112dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_height="132dp"
+                    android:layout_marginEnd="7dp"
                     android:layout_weight="1"
-                    app:cardBackgroundColor="@color/light_surface"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="1dp">
+                    app:cardBackgroundColor="@color/color_surface"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/color_outline_variant"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:background="@color/color_primary_container"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:contentDescription="Thu nhập"
+                                android:src="@drawable/ic_arrow_drop_down"
+                                app:tint="@color/color_income" />
+
+                        </LinearLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
                             android:text="Tổng thu"
-                            android:textColor="@color/light_text_secondary"
+                            android:textColor="@color/color_on_surface_variant"
                             android:textSize="13sp" />
 
                         <TextView
                             android:id="@+id/tvIncomeQuick"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginTop="4dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
                             android:text="0 ₫"
-                            android:textColor="@color/income_blue"
-                            android:textSize="18sp"
+                            android:textColor="@color/color_income"
+                            android:textSize="19sp"
                             android:textStyle="bold" />
 
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
+                <!-- Expense card -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="0dp"
-                    android:layout_height="112dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_height="132dp"
+                    android:layout_marginStart="7dp"
                     android:layout_weight="1"
-                    app:cardBackgroundColor="@color/light_surface"
-                    app:cardCornerRadius="14dp"
-                    app:cardElevation="1dp">
+                    app:cardBackgroundColor="@color/color_surface"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/color_outline_variant"
+                    app:strokeWidth="1dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:orientation="vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <LinearLayout
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:background="@color/color_error_container"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:contentDescription="Chi tiêu"
+                                android:rotation="180"
+                                android:src="@drawable/ic_arrow_drop_down"
+                                app:tint="@color/color_expense" />
+
+                        </LinearLayout>
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
                             android:text="Tổng chi"
-                            android:textColor="@color/light_text_secondary"
+                            android:textColor="@color/color_on_surface_variant"
                             android:textSize="13sp" />
 
                         <TextView
                             android:id="@+id/tvExpenseQuick"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="6dp"
+                            android:layout_marginTop="4dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
                             android:text="0 ₫"
-                            android:textColor="@color/expense_red"
-                            android:textSize="18sp"
+                            android:textColor="@color/color_expense"
+                            android:textSize="19sp"
                             android:textStyle="bold" />
 
                     </LinearLayout>
@@ -226,8 +306,72 @@
 
             </LinearLayout>
 
+            <!-- Statistics shortcut -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:cardBackgroundColor="@color/color_surface"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/color_outline_variant"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@color/color_surface_container"
+                        android:contentDescription="Thống kê tài chính"
+                        android:padding="9dp"
+                        android:src="@drawable/ic_chart"
+                        app:tint="@color/color_primary" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Phân tích tài chính"
+                            android:textColor="@color/color_on_surface"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="Xem biểu đồ và cơ cấu thu chi"
+                            android:textColor="@color/color_on_surface_variant"
+                            android:textSize="12sp" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="Mở thống kê"
+                        android:src="@drawable/ic_arrow_forward"
+                        app:tint="@color/color_on_surface_variant" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
 
+        <!-- Statistics fragment container -->
         <FrameLayout
             android:id="@+id/statisticsContainer"
             android:layout_width="match_parent"
@@ -235,6 +379,5 @@
             android:visibility="gone" />
 
     </LinearLayout>
-    ```
 
 </androidx.core.widget.NestedScrollView>

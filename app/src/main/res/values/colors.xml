@@ -1,21 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary_green">#2E7D32</color>
-    <color name="secondary_green">#43A047</color>
+    <!-- Brand -->
+    <color name="color_primary">#176B3A</color>
+    <color name="color_on_primary">#FFFFFF</color>
+    <color name="color_primary_container">#C9F0D3</color>
+    <color name="color_on_primary_container">#00210D</color>
+
+    <color name="color_secondary">#477A58</color>
+    <color name="color_on_secondary">#FFFFFF</color>
+    <color name="color_secondary_container">#D0EBD5</color>
+    <color name="color_on_secondary_container">#082012</color>
+
+    <!-- Surfaces and content -->
+    <color name="color_background">#F7F9F7</color>
+    <color name="color_surface">#FFFFFF</color>
+    <color name="color_surface_container">#EFF3EF</color>
+    <color name="color_surface_variant">#E5EBE6</color>
+    <color name="color_on_surface">#17211A</color>
+    <color name="color_on_surface_variant">#5F6D63</color>
+    <color name="color_outline">#7B897E</color>
+    <color name="color_outline_variant">#DCE4DD</color>
+
+    <!-- Financial semantic colors -->
+    <color name="color_income">#187A45</color>
+    <color name="color_expense">#B3261E</color>
+    <color name="color_warning">#8A5200</color>
+    <color name="color_info">#245FA6</color>
+    <color name="color_success">#187A45</color>
+
+    <!-- Error -->
+    <color name="color_error">#B3261E</color>
+    <color name="color_on_error">#FFFFFF</color>
+    <color name="color_error_container">#F9DEDC</color>
+    <color name="color_on_error_container">#410E0B</color>
+
+    <!-- Legacy aliases: preserve existing screens -->
+    <color name="primary_green">@color/color_primary</color>
+    <color name="secondary_green">@color/color_secondary</color>
     <color name="income_blue">#1565C0</color>
     <color name="expense_red">#C62828</color>
     <color name="budget_warning_orange">#E65100</color>
 
-    <color name="light_background">#F1F8E9</color>
-    <color name="light_surface">#FFFFFF</color>
-    <color name="light_text_primary">#212121</color>
-    <color name="light_text_secondary">#757575</color>
+    <color name="light_background">@color/color_background</color>
+    <color name="light_surface">@color/color_surface</color>
+    <color name="light_text_primary">@color/color_on_surface</color>
+    <color name="light_text_secondary">@color/color_on_surface_variant</color>
 
+    <!-- Retained for legacy references -->
     <color name="dark_background">#121212</color>
     <color name="dark_surface">#1E1E1E</color>
     <color name="dark_text_primary">#FFFFFF</color>
     <color name="dark_text_secondary">#9E9E9E</color>
 
     <color name="error_red">#C62828</color>
-    <color name="error_background">#FFEBEE</color>
+    <color name="error_background">#F9DEDC</color>
 </resources>

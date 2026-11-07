@@ -1,12 +1,16 @@
+
 package com.example.expensetracker;
 
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.MotionEvent;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,25 +41,36 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG_OVERVIEW = "overview";
+    private static final String TAG_TRANSACTIONS = "transactions";
+    private static final String TAG_CATEGORIES = "categories";
+    private static final String TAG_BUDGETS = "budgets";
+
+    private static final int MENU_TRANSACTIONS = 1;
+    private static final int MENU_CATEGORIES = 2;
+    private static final int MENU_BUDGETS = 3;
+
     private LinearLayout navOverview;
-    private LinearLayout navTransactions;
-    private LinearLayout navCategories;
-    private LinearLayout navBudgets;
+    private LinearLayout navFinance;
+    private LinearLayout navGroups;
+    private LinearLayout navChatbot;
 
     private ImageView iconOverview;
-    private ImageView iconTransactions;
-    private ImageView iconCategories;
-    private ImageView iconBudgets;
+    private ImageView iconFinance;
+    private ImageView iconGroups;
+    private ImageView iconChatbot;
     private ImageView iconAccount;
+    private ImageView iconNotification;
 
     private TextView labelOverview;
-    private TextView labelTransactions;
-    private TextView labelCategories;
-    private TextView labelBudgets;
+    private TextView labelFinance;
+    private TextView labelGroups;
+    private TextView labelChatbot;
 
     private FloatingActionButton fabAdd;
 
-    private int selectedGreen;
+    private int selectedColor;
     private int inactiveColor;
 
     private TransactionViewModel transactionViewModel;
@@ -74,8 +89,7 @@ public class MainActivity extends AppCompatActivity {
             new CompositeDisposable();
 
     @Override
-    protected void onCreate(
-            @Nullable Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         screenSecurityHelper.enable(this);
@@ -87,28 +101,28 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        selectedGreen =
-                ContextCompat.getColor(
-                        this,
-                        R.color.primary_green);
+        selectedColor = ContextCompat.getColor(
+                this,
+                R.color.primary_green
+        );
 
-        inactiveColor =
-                ContextCompat.getColor(
-                        this,
-                        R.color.light_text_secondary);
+        inactiveColor = ContextCompat.getColor(
+                this,
+                R.color.light_text_secondary
+        );
 
         initializeViews();
-        observeSessionExpired();
         setupListeners();
+        observeSessionExpired();
 
-        transactionViewModel =
-                new ViewModelProvider(this)
-                        .get(TransactionViewModel.class);
+        transactionViewModel = new ViewModelProvider(this)
+                .get(TransactionViewModel.class);
 
         if (savedInstanceState == null) {
             showFragment(
                     new OverviewFragment(),
-                    "overview");
+                    TAG_OVERVIEW
+            );
         } else {
             updateSelectedNavigation();
         }
@@ -131,9 +145,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        if (event.getActionMasked() == MotionEvent.ACTION_DOWN
-                || event.getActionMasked() == MotionEvent.ACTION_UP
-                || event.getActionMasked() == MotionEvent.ACTION_MOVE) {
+        int action = event.getActionMasked();
+
+        if (action == MotionEvent.ACTION_DOWN
+                || action == MotionEvent.ACTION_UP
+                || action == MotionEvent.ACTION_MOVE) {
             idleTimeoutManager.reset();
         }
 
@@ -142,91 +158,148 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeViews() {
         navOverview = findViewById(R.id.navOverview);
-
-        navTransactions = findViewById(R.id.navTransactions);
-
-        navCategories = findViewById(R.id.navCategories);
-
-        navBudgets = findViewById(R.id.navBudgets);
+        navFinance = findViewById(R.id.navFinance);
+        navGroups = findViewById(R.id.navGroups);
+        navChatbot = findViewById(R.id.navChatbot);
 
         iconOverview = findViewById(R.id.iconOverview);
-
-        iconTransactions = findViewById(R.id.iconTransactions);
-
-        iconCategories = findViewById(R.id.iconCategories);
-
-        iconBudgets = findViewById(R.id.iconBudgets);
-
+        iconFinance = findViewById(R.id.iconFinance);
+        iconGroups = findViewById(R.id.iconGroups);
+        iconChatbot = findViewById(R.id.iconChatbot);
         iconAccount = findViewById(R.id.iconAccount);
+        iconNotification = findViewById(R.id.iconNotification);
 
         labelOverview = findViewById(R.id.labelOverview);
-
-        labelTransactions = findViewById(R.id.labelTransactions);
-
-        labelCategories = findViewById(R.id.labelCategories);
-
-        labelBudgets = findViewById(R.id.labelBudgets);
+        labelFinance = findViewById(R.id.labelFinance);
+        labelGroups = findViewById(R.id.labelGroups);
+        labelChatbot = findViewById(R.id.labelChatbot);
 
         fabAdd = findViewById(R.id.fabAdd);
     }
 
     private void setupListeners() {
-        navOverview.setOnClickListener(
-                v -> showFragment(
+        navOverview.setOnClickListener(v ->
+                showFragment(
                         new OverviewFragment(),
-                        "overview"));
+                        TAG_OVERVIEW
+                )
+        );
 
-        navTransactions.setOnClickListener(
-                v -> showFragment(
-                        new TransactionsFragment(),
-                        "transactions"));
+        navFinance.setOnClickListener(v ->
+                showFinanceMenu()
+        );
 
-        navCategories.setOnClickListener(
-                v -> showFragment(
-                        new CategoriesFragment(),
-                        "categories"));
+        navGroups.setOnClickListener(v ->
+                showNotImplementedMessage("Quản lý nhóm")
+        );
 
-        navBudgets.setOnClickListener(
-                v -> showFragment(
-                        new BudgetsFragment(),
-                        "budgets"));
+        navChatbot.setOnClickListener(v ->
+                showNotImplementedMessage("Chatbot tư vấn tài chính")
+        );
 
-        iconAccount.setOnClickListener(
-                v -> openProfile());
+        iconNotification.setOnClickListener(v ->
+                showNotImplementedMessage("Thông báo")
+        );
 
-        fabAdd.setOnClickListener(
-                v -> openAddTransaction());
+        iconAccount.setOnClickListener(v ->
+                openProfile()
+        );
+
+        fabAdd.setOnClickListener(v ->
+                openAddTransaction()
+        );
+    }
+
+    private void showFinanceMenu() {
+        PopupMenu popupMenu = new PopupMenu(
+                this,
+                navFinance
+        );
+
+        popupMenu.getMenu().add(
+                0,
+                MENU_TRANSACTIONS,
+                0,
+                "Giao dịch"
+        );
+
+        popupMenu.getMenu().add(
+                0,
+                MENU_CATEGORIES,
+                1,
+                "Danh mục"
+        );
+
+        popupMenu.getMenu().add(
+                0,
+                MENU_BUDGETS,
+                2,
+                "Ngân sách"
+        );
+
+        popupMenu.setOnMenuItemClickListener(this::onFinanceMenuItemSelected);
+        popupMenu.show();
+    }
+
+    private boolean onFinanceMenuItemSelected(MenuItem item) {
+        int itemId = item.getItemId();
+
+        if (itemId == MENU_TRANSACTIONS) {
+            showFragment(
+                    new TransactionsFragment(),
+                    TAG_TRANSACTIONS
+            );
+            return true;
+        }
+
+        if (itemId == MENU_CATEGORIES) {
+            showFragment(
+                    new CategoriesFragment(),
+                    TAG_CATEGORIES
+            );
+            return true;
+        }
+
+        if (itemId == MENU_BUDGETS) {
+            showFragment(
+                    new BudgetsFragment(),
+                    TAG_BUDGETS
+            );
+            return true;
+        }
+
+        return false;
     }
 
     private void observeSessionExpired() {
         sessionDisposables.add(
                 sessionManager
                         .observeSessionExpired()
-                        .observeOn(
-                                AndroidSchedulers.mainThread())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(
-                                value -> openLoginActivity()));
+                                value -> openLoginActivity()
+                        )
+        );
     }
 
     private void openLoginActivity() {
         idleTimeoutManager.stop();
 
-        Intent intent =
-                new Intent(
-                        this,
-                        LoginActivity.class);
+        Intent intent = new Intent(
+                this,
+                LoginActivity.class
+        );
 
         intent.setFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK |
-                        Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
+        );
 
         startActivity(intent);
         finish();
     }
 
-    private void showFragment(
-            Fragment fragment,
-            String tag) {
+    private void showFragment(Fragment fragment, String tag) {
         if (!sessionManager.isSessionActive()) {
             openLoginActivity();
             return;
@@ -273,32 +346,33 @@ public class MainActivity extends AppCompatActivity {
             transaction.add(
                     R.id.nav_host_fragment,
                     targetFragment,
-                    tag);
+                    tag
+            );
         }
 
         transaction.commitNow();
 
         selectedNavigationTag = tag;
-
         updateNavigation(tag);
     }
 
     private String getVisibleNavigationTag(
-            FragmentManager fragmentManager) {
-        if (isFragmentVisible(fragmentManager, "overview")) {
-            return "overview";
+            FragmentManager fragmentManager
+    ) {
+        if (isFragmentVisible(fragmentManager, TAG_OVERVIEW)) {
+            return TAG_OVERVIEW;
         }
 
-        if (isFragmentVisible(fragmentManager, "transactions")) {
-            return "transactions";
+        if (isFragmentVisible(fragmentManager, TAG_TRANSACTIONS)) {
+            return TAG_TRANSACTIONS;
         }
 
-        if (isFragmentVisible(fragmentManager, "categories")) {
-            return "categories";
+        if (isFragmentVisible(fragmentManager, TAG_CATEGORIES)) {
+            return TAG_CATEGORIES;
         }
 
-        if (isFragmentVisible(fragmentManager, "budgets")) {
-            return "budgets";
+        if (isFragmentVisible(fragmentManager, TAG_BUDGETS)) {
+            return TAG_BUDGETS;
         }
 
         return null;
@@ -306,74 +380,82 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isFragmentVisible(
             FragmentManager fragmentManager,
-            String tag) {
+            String tag
+    ) {
         Fragment fragment = fragmentManager.findFragmentByTag(tag);
-
         return fragment != null && fragment.isVisible();
     }
 
-    private void updateNavigation(
-            String tag) {
-        boolean overviewSelected =
-                "overview".equals(tag);
+    private void updateNavigation(String tag) {
+        boolean overviewSelected = TAG_OVERVIEW.equals(tag);
 
-        boolean transactionsSelected =
-                "transactions".equals(tag);
-
-        boolean categoriesSelected =
-                "categories".equals(tag);
-
-        boolean budgetsSelected =
-                "budgets".equals(tag);
+        boolean financeSelected =
+                TAG_TRANSACTIONS.equals(tag)
+                        || TAG_CATEGORIES.equals(tag)
+                        || TAG_BUDGETS.equals(tag);
 
         updateNavigationItem(
                 iconOverview,
                 labelOverview,
-                overviewSelected);
+                overviewSelected
+        );
 
         updateNavigationItem(
-                iconTransactions,
-                labelTransactions,
-                transactionsSelected);
+                iconFinance,
+                labelFinance,
+                financeSelected
+        );
 
         updateNavigationItem(
-                iconCategories,
-                labelCategories,
-                categoriesSelected);
+                iconGroups,
+                labelGroups,
+                false
+        );
 
         updateNavigationItem(
-                iconBudgets,
-                labelBudgets,
-                budgetsSelected);
+                iconChatbot,
+                labelChatbot,
+                false
+        );
     }
 
     private void updateNavigationItem(
             ImageView icon,
             TextView label,
-            boolean selected) {
-        int color =
-                selected
-                        ? selectedGreen
-                        : inactiveColor;
+            boolean selected
+    ) {
+        int color = selected
+                ? selectedColor
+                : inactiveColor;
 
         icon.setColorFilter(color);
         label.setTextColor(color);
         label.setTypeface(
                 selected
                         ? Typeface.DEFAULT_BOLD
-                        : Typeface.DEFAULT);
+                        : Typeface.DEFAULT
+        );
     }
 
     private void updateSelectedNavigation() {
         selectedNavigationTag = getVisibleNavigationTag(
-                getSupportFragmentManager());
+                getSupportFragmentManager()
+        );
 
         if (selectedNavigationTag == null) {
-            updateNavigation("overview");
+            updateNavigation(TAG_OVERVIEW);
             return;
         }
 
         updateNavigation(selectedNavigationTag);
+    }
+
+    private void showNotImplementedMessage(String featureName) {
+        Toast.makeText(
+                this,
+                featureName + " chưa được triển khai.",
+                Toast.LENGTH_SHORT
+        ).show();
     }
 
     private void openProfile() {
@@ -385,7 +467,9 @@ public class MainActivity extends AppCompatActivity {
         startActivity(
                 new Intent(
                         this,
-                        ProfileActivity.class));
+                        ProfileActivity.class
+                )
+        );
     }
 
     private void openAddTransaction() {
@@ -397,13 +481,14 @@ public class MainActivity extends AppCompatActivity {
         transactionViewModel.resetTransactionAction();
 
         AddEditTransactionBottomSheet sheet =
-                AddEditTransactionBottomSheet
-                        .newCreateInstance(
-                                transactionViewModel);
+                AddEditTransactionBottomSheet.newCreateInstance(
+                        transactionViewModel
+                );
 
         sheet.show(
                 getSupportFragmentManager(),
-                "AddEditTransactionBottomSheet");
+                "AddEditTransactionBottomSheet"
+        );
     }
 
     @Override
