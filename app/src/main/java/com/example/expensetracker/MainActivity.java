@@ -26,6 +26,7 @@ import com.example.expensetracker.presentation.ui.activity.ProfileActivity;
 import com.example.expensetracker.presentation.ui.bottomsheet.AddEditTransactionBottomSheet;
 import com.example.expensetracker.presentation.ui.fragment.budget.BudgetsFragment;
 import com.example.expensetracker.presentation.ui.fragment.category.CategoriesFragment;
+import com.example.expensetracker.presentation.ui.fragment.chatbot.ChatbotFragment;
 import com.example.expensetracker.presentation.ui.fragment.overview.OverviewFragment;
 import com.example.expensetracker.presentation.ui.fragment.transaction.TransactionsFragment;
 import com.example.expensetracker.presentation.viewmodel.TransactionViewModel;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG_TRANSACTIONS = "transactions";
     private static final String TAG_CATEGORIES = "categories";
     private static final String TAG_BUDGETS = "budgets";
+    private static final String TAG_CHATBOT = "chatbot";
 
     private static final int MENU_TRANSACTIONS = 1;
     private static final int MENU_CATEGORIES = 2;
@@ -194,7 +196,10 @@ public class MainActivity extends AppCompatActivity {
         );
 
         navChatbot.setOnClickListener(v ->
-                showNotImplementedMessage("Chatbot tư vấn tài chính")
+                showFragment(
+                        new ChatbotFragment(),
+                        TAG_CHATBOT
+                )
         );
 
         iconNotification.setOnClickListener(v ->
@@ -237,7 +242,10 @@ public class MainActivity extends AppCompatActivity {
                 "Ngân sách"
         );
 
-        popupMenu.setOnMenuItemClickListener(this::onFinanceMenuItemSelected);
+        popupMenu.setOnMenuItemClickListener(
+                this::onFinanceMenuItemSelected
+        );
+
         popupMenu.show();
     }
 
@@ -305,7 +313,8 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentManager fragmentManager =
+                getSupportFragmentManager();
 
         if (fragmentManager.isStateSaved()) {
             return;
@@ -326,7 +335,8 @@ public class MainActivity extends AppCompatActivity {
                 ? null
                 : fragmentManager.findFragmentByTag(currentTag);
 
-        Fragment targetFragment = fragmentManager.findFragmentByTag(tag);
+        Fragment targetFragment =
+                fragmentManager.findFragmentByTag(tag);
 
         if (targetFragment == null) {
             targetFragment = fragment;
@@ -375,6 +385,10 @@ public class MainActivity extends AppCompatActivity {
             return TAG_BUDGETS;
         }
 
+        if (isFragmentVisible(fragmentManager, TAG_CHATBOT)) {
+            return TAG_CHATBOT;
+        }
+
         return null;
     }
 
@@ -383,6 +397,7 @@ public class MainActivity extends AppCompatActivity {
             String tag
     ) {
         Fragment fragment = fragmentManager.findFragmentByTag(tag);
+
         return fragment != null && fragment.isVisible();
     }
 
@@ -415,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
         updateNavigationItem(
                 iconChatbot,
                 labelChatbot,
-                false
+                TAG_CHATBOT.equals(tag)
         );
     }
 
@@ -430,6 +445,7 @@ public class MainActivity extends AppCompatActivity {
 
         icon.setColorFilter(color);
         label.setTextColor(color);
+
         label.setTypeface(
                 selected
                         ? Typeface.DEFAULT_BOLD
