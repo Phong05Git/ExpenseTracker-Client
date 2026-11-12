@@ -14,6 +14,8 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Header -->
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
@@ -35,29 +37,66 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:text="Thêm"
-                android:textColor="@color/light_surface"
+                android:textColor="@color/color_on_primary"
                 android:textSize="14sp"
                 app:backgroundTint="@color/primary_green"
                 app:cornerRadius="12dp"
                 app:icon="@drawable/ic_add"
-                app:iconTint="@color/light_surface" />
+                app:iconTint="@color/color_on_primary" />
 
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="8dp"
+            android:text="Theo dõi và kiểm soát chi tiêu của bạn"
+            android:textColor="@color/light_text_secondary"
+            android:textSize="13sp" />
+
+        <!-- Section title -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
             android:text="Danh sách ngân sách"
             android:textColor="@color/light_text_primary"
             android:textSize="16sp"
             android:textStyle="bold" />
 
+        <!-- Loading -->
+
+        <ProgressBar
+            android:id="@+id/progressBudgets"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="24dp"
+            android:indeterminateTint="@color/primary_green"
+            android:visibility="gone" />
+
+        <!-- Empty state -->
+
+        <TextView
+            android:id="@+id/tvEmptyBudgets"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:gravity="center"
+            android:padding="24dp"
+            android:text="Chưa có ngân sách nào.\nNhấn Thêm để tạo ngân sách đầu tiên."
+            android:textColor="@color/light_text_secondary"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <!-- Budget list -->
+
         <LinearLayout
             android:id="@+id/budgetList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:orientation="vertical" />
 
     </LinearLayout>

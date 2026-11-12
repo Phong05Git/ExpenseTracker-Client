@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -13,6 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.expensetracker.R;
+import com.example.expensetracker.domain.common.Resource;
 import com.example.expensetracker.domain.model.Budget;
 import com.example.expensetracker.presentation.adapter.BudgetAdapter;
 import com.example.expensetracker.presentation.dialog.ConfirmDeleteDialog;
@@ -27,21 +30,37 @@ public final class BudgetsFragment extends Fragment {
 
     private BudgetViewModel budgetViewModel;
     private BudgetAdapter budgetAdapter;
+
     private LinearLayout budgetList;
+    private ProgressBar progressBudgets;
+    private TextView tvEmptyBudgets;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_budgets, container, false);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+
+        return inflater.inflate(
+                R.layout.fragment_budgets,
+                container,
+                false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(
+            @NonNull View view,
+            @Nullable Bundle savedInstanceState) {
+
         super.onViewCreated(view, savedInstanceState);
 
         budgetList = view.findViewById(R.id.budgetList);
+        progressBudgets = view.findViewById(R.id.progressBudgets);
+        tvEmptyBudgets = view.findViewById(R.id.tvEmptyBudgets);
 
-        budgetViewModel = new ViewModelProvider(requireActivity()).get(BudgetViewModel.class);
+        budgetViewModel = new ViewModelProvider(requireActivity())
+                .get(BudgetViewModel.class);
 
         budgetAdapter = new BudgetAdapter(
                 requireContext(),
@@ -69,43 +88,65 @@ public final class BudgetsFragment extends Fragment {
     }
 
     private void observeBudget() {
+
         budgetViewModel.getBudgets().observe(
                 getViewLifecycleOwner(),
                 resource -> {
+
                     if (resource == null) {
                         return;
                     }
 
                     switch (resource.getStatus()) {
+
+                        case LOADING:
+                            progressBudgets.setVisibility(View.VISIBLE);
+                            tvEmptyBudgets.setVisibility(View.GONE);
+                            break;
+
                         case SUCCESS:
+                            progressBudgets.setVisibility(View.GONE);
+
                             budgetAdapter.setItems(resource.getData());
+
+                            boolean isEmpty = resource.getData() == null
+                                    || resource.getData().isEmpty();
+
+                            tvEmptyBudgets.setVisibility(
+                                    isEmpty ? View.VISIBLE : View.GONE);
+
                             break;
 
                         case ERROR:
+                            progressBudgets.setVisibility(View.GONE);
+                            tvEmptyBudgets.setVisibility(View.GONE);
+
                             Toast.makeText(
                                     requireContext(),
                                     resource.getMessage(),
                                     Toast.LENGTH_LONG).show();
                             break;
 
-                        case LOADING:
                         case IDLE:
                         default:
+                            progressBudgets.setVisibility(View.GONE);
                             break;
                     }
                 });
     }
 
     private void observeBudgetActions() {
+
         budgetViewModel.getBudgetAction().observe(
                 getViewLifecycleOwner(),
                 resource -> {
+
                     if (resource == null) {
                         return;
                     }
 
                     if (resource.getStatus()
-                            == com.example.expensetracker.domain.common.Resource.Status.ERROR) {
+                            == Resource.Status.ERROR) {
 
                         Toast.makeText(
                                 requireContext(),
@@ -119,11 +160,13 @@ public final class BudgetsFragment extends Fragment {
         budgetViewModel.getDeleteAction().observe(
                 getViewLifecycleOwner(),
                 resource -> {
+
                     if (resource == null) {
                         return;
                     }
 
                     switch (resource.getStatus()) {
+
                         case SUCCESS:
                             Toast.makeText(
                                     requireContext(),
@@ -152,6 +195,7 @@ public final class BudgetsFragment extends Fragment {
     }
 
     private void showCreateBudget() {
+
         budgetViewModel.resetBudgetAction();
 
         AddEditBudgetBottomSheet sheet =
@@ -163,6 +207,7 @@ public final class BudgetsFragment extends Fragment {
     }
 
     private void showEditBudget(Budget budget) {
+
         budgetViewModel.resetBudgetAction();
 
         AddEditBudgetBottomSheet sheet =
@@ -174,16 +219,17 @@ public final class BudgetsFragment extends Fragment {
     }
 
     private void showDeleteBudget(Budget budget) {
+
         ConfirmDeleteDialog.show(
                 requireContext(),
                 "Xóa ngân sách",
-                "Bạn có chắc chắn muốn xóa ngân sách \"" +
-                        budget.getCategoryName() +
-                        "\" tháng " +
-                        budget.getMonth() +
-                        "/" +
-                        budget.getYear() +
-                        "?",
+                "Bạn có chắc chắn muốn xóa ngân sách \""
+                        + budget.getCategoryName()
+                        + "\" tháng "
+                        + budget.getMonth()
+                        + "/"
+                        + budget.getYear()
+                        + "?",
                 () -> budgetViewModel.deleteBudget(
                         budget.getId()));
     }
