@@ -21,6 +21,11 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
+import android.util.Log;
+
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
 @AndroidEntryPoint
 public final class RegisterActivity extends AppCompatActivity {
     private RegisterViewModel registerViewModel;
@@ -45,8 +50,11 @@ public final class RegisterActivity extends AppCompatActivity {
             Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(
-                R.layout.activity_register);
+        setContentView(R.layout.activity_register);
+
+        if (com.example.expensetracker.BuildConfig.DEBUG) {
+            testTcpConnection();
+        }
 
         initializeViews();
 
@@ -278,5 +286,28 @@ public final class RegisterActivity extends AppCompatActivity {
 
         startActivity(intent);
         finish();
+    }
+
+    private void testTcpConnection() {
+        new Thread(() -> {
+            try (Socket socket = new Socket()) {
+                socket.connect(
+                        new InetSocketAddress("10.0.2.2", 5080),
+                        5000
+                );
+
+                Log.i(
+                        "NetworkProbe",
+                        "TCP CONNECTED: " + socket.isConnected()
+                );
+
+            } catch (Exception exception) {
+                Log.e(
+                        "NetworkProbe",
+                        "TCP CONNECTION FAILED",
+                        exception
+                );
+            }
+        }).start();
     }
 }
