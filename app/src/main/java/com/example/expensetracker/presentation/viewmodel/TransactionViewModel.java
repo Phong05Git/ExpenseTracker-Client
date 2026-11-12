@@ -1,3 +1,4 @@
+
 package com.example.expensetracker.presentation.viewmodel;
 
 import androidx.lifecycle.LiveData;
@@ -12,6 +13,7 @@ import com.example.expensetracker.domain.usecase.transaction.FilterTransactionsU
 import com.example.expensetracker.domain.usecase.transaction.GetTransactionsByDateUseCase;
 import com.example.expensetracker.domain.usecase.transaction.UpdateTransactionUseCase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -24,6 +26,8 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 @HiltViewModel
 public class TransactionViewModel extends ViewModel {
+
+    private static final int MONTH_PAGE_SIZE = 100;
 
     private final FilterTransactionsUseCase filterTransactionsUseCase;
     private final GetTransactionsByDateUseCase getTransactionsByDateUseCase;
@@ -99,6 +103,12 @@ public class TransactionViewModel extends ViewModel {
         return deleteAction;
     }
 
+    /**
+     * Load all transactions belonging to the displayed month.
+     *
+     * The API limits each page to 100 records, so this method
+     * loads subsequent pages until the final page is reached.
+     */
     public void loadMonth(
             String fromDate,
             String toDate) {
@@ -110,31 +120,85 @@ public class TransactionViewModel extends ViewModel {
         monthTransactions.setValue(
                 Resource.loading());
 
-        monthRequest =
-                filterTransactionsUseCase
-                        .execute(
-                                fromDate,
-                                toDate,
-                                null,
-                                null,
-                                null,
-                                1,
-                                100)
-                        .subscribeOn(
-                                Schedulers.io())
-                        .observeOn(
-                                AndroidSchedulers.mainThread())
-                        .subscribe(
-                                resource -> {
-                                    monthTransactions.setValue(
-                                            resource);
-                                },
-                                throwable -> {
-                                    monthTransactions.setValue(
-                                            Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi tải dữ liệu lịch.")));
-                                });
+        loadMonthPage(
+                fromDate,
+                toDate,
+                1,
+                new ArrayList<>()
+        );
+    }
 
-        disposables.add(monthRequest);
+    private void loadMonthPage(
+            String fromDate,
+            String toDate,
+            int page,
+            List<Transaction> accumulated) {
+
+        Disposable request = filterTransactionsUseCase
+                .execute(
+                        fromDate,
+                        toDate,
+                        null,
+                        null,
+                        null,
+                        page,
+                        MONTH_PAGE_SIZE
+                )
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                        resource -> {
+                            if (resource == null
+                                    || resource.getStatus()
+                                    != Resource.Status.SUCCESS) {
+
+                                String message = resource != null
+                                        ? resource.getMessage()
+                                        : "Không thể tải dữ liệu lịch.";
+
+                                monthTransactions.setValue(
+                                        Resource.error(message)
+                                );
+                                return;
+                            }
+
+                            List<Transaction> pageItems =
+                                    resource.getData();
+
+                            if (pageItems != null) {
+                                accumulated.addAll(pageItems);
+                            }
+
+                            if (pageItems != null
+                                    && pageItems.size() == MONTH_PAGE_SIZE) {
+
+                                loadMonthPage(
+                                        fromDate,
+                                        toDate,
+                                        page + 1,
+                                        accumulated
+                                );
+                            } else {
+                                monthTransactions.setValue(
+                                        Resource.success(
+                                                new ArrayList<>(accumulated)
+                                        )
+                                );
+                            }
+                        },
+                        throwable -> monthTransactions.setValue(
+                                Resource.error(
+                                        com.example.expensetracker.util.ErrorUtils
+                                                .getErrorMessage(
+                                                        throwable,
+                                                        "Lỗi tải dữ liệu lịch."
+                                                )
+                                )
+                        )
+                );
+
+        monthRequest = request;
+        disposables.add(request);
     }
 
     public void filterTransactions(
@@ -172,7 +236,13 @@ public class TransactionViewModel extends ViewModel {
                                 },
                                 throwable -> {
                                     filteredTransactions.setValue(
-                                            Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi lọc giao dịch.")));
+                                            Resource.error(
+                                                    com.example.expensetracker.util.ErrorUtils
+                                                            .getErrorMessage(
+                                                                    throwable,
+                                                                    "Lỗi lọc giao dịch."
+                                                            )
+                                            ));
                                 });
 
         disposables.add(filterRequest);
@@ -202,7 +272,13 @@ public class TransactionViewModel extends ViewModel {
                                 },
                                 throwable -> {
                                     transactions.setValue(
-                                            Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi tải giao dịch trong ngày.")));
+                                            Resource.error(
+                                                    com.example.expensetracker.util.ErrorUtils
+                                                            .getErrorMessage(
+                                                                    throwable,
+                                                                    "Lỗi tải giao dịch trong ngày."
+                                                            )
+                                            ));
                                 });
 
         disposables.add(dateRequest);
@@ -243,7 +319,13 @@ public class TransactionViewModel extends ViewModel {
                                 },
                                 throwable -> {
                                     transactionAction.setValue(
-                                            Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi thêm giao dịch.")));
+                                            Resource.error(
+                                                    com.example.expensetracker.util.ErrorUtils
+                                                            .getErrorMessage(
+                                                                    throwable,
+                                                                    "Lỗi thêm giao dịch."
+                                                            )
+                                            ));
                                 });
 
         disposables.add(
@@ -285,7 +367,13 @@ public class TransactionViewModel extends ViewModel {
                                 },
                                 throwable -> {
                                     transactionAction.setValue(
-                                            Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi cập nhật giao dịch.")));
+                                            Resource.error(
+                                                    com.example.expensetracker.util.ErrorUtils
+                                                            .getErrorMessage(
+                                                                    throwable,
+                                                                    "Lỗi cập nhật giao dịch."
+                                                            )
+                                            ));
                                 });
 
         disposables.add(
@@ -316,7 +404,13 @@ public class TransactionViewModel extends ViewModel {
                                 },
                                 throwable -> {
                                     deleteAction.setValue(
-                                            Resource.error(com.example.expensetracker.util.ErrorUtils.getErrorMessage(throwable, "Lỗi xóa giao dịch.")));
+                                            Resource.error(
+                                                    com.example.expensetracker.util.ErrorUtils
+                                                            .getErrorMessage(
+                                                                    throwable,
+                                                                    "Lỗi xóa giao dịch."
+                                                            )
+                                            ));
                                 });
 
         disposables.add(

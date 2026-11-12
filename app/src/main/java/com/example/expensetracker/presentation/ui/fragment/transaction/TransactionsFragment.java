@@ -1,3 +1,4 @@
+
 package com.example.expensetracker.presentation.ui.fragment.transaction;
 
 import android.os.Bundle;
@@ -53,39 +54,62 @@ public final class TransactionsFragment extends Fragment {
     private Integer activeType;
     private String activeKeyword;
 
-    private io.reactivex.rxjava3.disposables.CompositeDisposable disposables = new io.reactivex.rxjava3.disposables.CompositeDisposable();
+    private final io.reactivex.rxjava3.disposables.CompositeDisposable disposables =
+            new io.reactivex.rxjava3.disposables.CompositeDisposable();
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_transactions, container, false);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+
+        return inflater.inflate(
+                R.layout.fragment_transactions,
+                container,
+                false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(
+            @NonNull View view,
+            @Nullable Bundle savedInstanceState) {
+
         super.onViewCreated(view, savedInstanceState);
 
-        viewModel = new ViewModelProvider(this).get(TransactionViewModel.class);
-        categoryViewModel = new ViewModelProvider(requireActivity()).get(CategoryViewModel.class);
+        viewModel = new ViewModelProvider(this)
+                .get(TransactionViewModel.class);
 
-        // Observe Activity-scoped ViewModel: detects transactions created via the FAB in
-        // MainActivity (which uses the Activity ViewModel, not this Fragment's ViewModel).
+        categoryViewModel = new ViewModelProvider(requireActivity())
+                .get(CategoryViewModel.class);
+
+        // Observe Activity-scoped ViewModel to detect transactions
+        // created through the FAB in MainActivity.
         TransactionViewModel activityViewModel =
-                new ViewModelProvider(requireActivity()).get(TransactionViewModel.class);
+                new ViewModelProvider(requireActivity())
+                        .get(TransactionViewModel.class);
 
-        activityViewModel.getTransactionAction().observe(getViewLifecycleOwner(), resource -> {
-            if (resource != null
-                    && resource.getStatus() == Resource.Status.SUCCESS) {
-                refreshAfterTransactionChanged();
-            }
-        });
+        activityViewModel.getTransactionAction().observe(
+                getViewLifecycleOwner(),
+                resource -> {
+                    if (resource != null
+                            && resource.getStatus()
+                            == Resource.Status.SUCCESS) {
+
+                        refreshAfterTransactionChanged();
+                    }
+                });
 
         disposables.add(
                 com.example.expensetracker.util.RxBus.getInstance()
                         .toObservable()
-                        .observeOn(io.reactivex.rxjava3.android.schedulers.AndroidSchedulers.mainThread())
+                        .observeOn(
+                                io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+                                        .mainThread())
                         .subscribe(event -> {
-                            if (event instanceof com.example.expensetracker.util.TransactionUpdatedEvent) {
+                            if (event instanceof
+                                    com.example.expensetracker.util.TransactionUpdatedEvent) {
+
                                 refreshAfterTransactionChanged();
                             }
                         })
@@ -97,9 +121,11 @@ public final class TransactionsFragment extends Fragment {
         btnNextMonth = view.findViewById(R.id.btnNextMonth);
         btnTransactionFilter = view.findViewById(R.id.btnTransactionFilter);
 
-        RecyclerView recyclerTransactions = view.findViewById(R.id.recyclerTransactions);
+        RecyclerView recyclerTransactions =
+                view.findViewById(R.id.recyclerTransactions);
 
         selectedDate = Calendar.getInstance();
+
         displayedMonth = Calendar.getInstance();
         displayedMonth.set(Calendar.DAY_OF_MONTH, 1);
 
@@ -107,7 +133,9 @@ public final class TransactionsFragment extends Fragment {
                 requireContext(),
                 this::showEditTransactionBottomSheet);
 
-        recyclerTransactions.setLayoutManager(new LinearLayoutManager(requireContext()));
+        recyclerTransactions.setLayoutManager(
+                new LinearLayoutManager(requireContext()));
+
         recyclerTransactions.setAdapter(transactionAdapter);
 
         calendarView.setSelectedDate(selectedDate);
@@ -120,6 +148,7 @@ public final class TransactionsFragment extends Fragment {
         updateMonthTitle();
 
         categoryViewModel.loadCategories();
+
         loadCurrentMonth();
         loadSelectedDate();
     }
@@ -127,110 +156,205 @@ public final class TransactionsFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
         disposables.clear();
     }
 
     private void observeViewModel() {
-        viewModel.getMonthTransactions().observe(getViewLifecycleOwner(), resource -> {
-            if (resource == null) return;
-            if (resource.getStatus() == Resource.Status.SUCCESS) {
-                calendarView.setTransactions(resource.getData());
-            }
-        });
 
-        viewModel.getTransactions().observe(getViewLifecycleOwner(), resource -> {
-            if (resource == null || resource.getData() == null) {
-                return;
-            }
+        viewModel.getMonthTransactions().observe(
+                getViewLifecycleOwner(),
+                resource -> {
+                    if (resource == null) {
+                        return;
+                    }
 
-            if (!hasActiveFilter()) {
-                transactionAdapter.setItems(resource.getData());
-            }
-        });
+                    if (resource.getStatus()
+                            == Resource.Status.SUCCESS) {
 
-        viewModel.getFilteredTransactions().observe(getViewLifecycleOwner(), resource -> {
-            if (resource == null || resource.getData() == null) {
-                return;
-            }
+                        calendarView.setTransactions(
+                                resource.getData());
+                    }
+                });
 
-            if (hasActiveFilter()) {
-                transactionAdapter.setItems(resource.getData());
-            }
-        });
+        viewModel.getTransactions().observe(
+                getViewLifecycleOwner(),
+                resource -> {
+                    if (resource == null
+                            || resource.getData() == null) {
 
-        // Refresh after edit/update transaction (uses Fragment-scoped ViewModel)
-        viewModel.getTransactionAction().observe(getViewLifecycleOwner(), resource -> {
-            if (resource != null && resource.getStatus() == Resource.Status.SUCCESS) {
-                refreshAfterTransactionChanged();
-            }
-        });
+                        return;
+                    }
 
-        // Refresh after delete transaction (uses Fragment-scoped ViewModel)
-        viewModel.getDeleteAction().observe(getViewLifecycleOwner(), resource -> {
-            if (resource != null && resource.getStatus() == Resource.Status.SUCCESS) {
-                refreshAfterTransactionChanged();
-            }
-        });
+                    if (!hasActiveFilter()) {
+                        transactionAdapter.setItems(
+                                resource.getData());
+                    }
+                });
+
+        viewModel.getFilteredTransactions().observe(
+                getViewLifecycleOwner(),
+                resource -> {
+                    if (resource == null
+                            || resource.getData() == null) {
+
+                        return;
+                    }
+
+                    if (hasActiveFilter()) {
+                        transactionAdapter.setItems(
+                                resource.getData());
+                    }
+                });
+
+        // Refresh after edit/update transaction.
+        viewModel.getTransactionAction().observe(
+                getViewLifecycleOwner(),
+                resource -> {
+                    if (resource != null
+                            && resource.getStatus()
+                            == Resource.Status.SUCCESS) {
+
+                        refreshAfterTransactionChanged();
+                    }
+                });
+
+        // Refresh after delete transaction.
+        viewModel.getDeleteAction().observe(
+                getViewLifecycleOwner(),
+                resource -> {
+                    if (resource != null
+                            && resource.getStatus()
+                            == Resource.Status.SUCCESS) {
+
+                        refreshAfterTransactionChanged();
+                    }
+                });
     }
 
     private void observeCategories() {
-        categoryViewModel.getCategories().observe(getViewLifecycleOwner(), resource -> {
-            if (resource == null || resource.getData() == null) {
-                return;
-            }
 
-            transactionAdapter.setCategories(resource.getData());
-        });
+        categoryViewModel.getCategories().observe(
+                getViewLifecycleOwner(),
+                resource -> {
+                    if (resource == null
+                            || resource.getData() == null) {
+
+                        return;
+                    }
+
+                    transactionAdapter.setCategories(
+                            resource.getData());
+                });
     }
 
     private void setupListeners() {
+
         calendarView.setOnDateSelectedListener(date -> {
+
             selectedDate = (Calendar) date.clone();
 
+            // If the selected date belongs to another month,
+            // synchronize the displayed month with that date.
+            if (!isSameMonth(selectedDate, displayedMonth)) {
+
+                displayedMonth.set(
+                        Calendar.YEAR,
+                        selectedDate.get(Calendar.YEAR));
+
+                displayedMonth.set(
+                        Calendar.MONTH,
+                        selectedDate.get(Calendar.MONTH));
+
+                displayedMonth.set(
+                        Calendar.DAY_OF_MONTH,
+                        1);
+
+                calendarView.setMonth(displayedMonth);
+
+                updateMonthTitle();
+
+                loadCurrentMonth();
+            }
+
             clearActiveFilter();
+
             loadSelectedDate();
         });
 
-        btnPreviousMonth.setOnClickListener(v -> changeMonth(-1));
-        btnNextMonth.setOnClickListener(v -> changeMonth(1));
-        btnTransactionFilter.setOnClickListener(v -> showFilterBottomSheet());
+        btnPreviousMonth.setOnClickListener(
+                v -> changeMonth(-1));
 
-        tvCurrentMonth.setOnClickListener(v -> showMonthPickerBottomSheet());
+        btnNextMonth.setOnClickListener(
+                v -> changeMonth(1));
+
+        btnTransactionFilter.setOnClickListener(
+                v -> showFilterBottomSheet());
+
+        tvCurrentMonth.setOnClickListener(
+                v -> showMonthPickerBottomSheet());
     }
 
     private void showMonthPickerBottomSheet() {
+
         int month = displayedMonth.get(Calendar.MONTH) + 1;
         int year = displayedMonth.get(Calendar.YEAR);
 
-        MonthPickerBottomSheet bottomSheet = MonthPickerBottomSheet.newInstance(month, year);
+        MonthPickerBottomSheet bottomSheet =
+                MonthPickerBottomSheet.newInstance(month, year);
 
-        bottomSheet.setOnMonthSelectedListener((selectedMonth, selectedYear) -> {
-            displayedMonth.set(Calendar.YEAR, selectedYear);
-            displayedMonth.set(Calendar.MONTH, selectedMonth - 1);
-            displayedMonth.set(Calendar.DAY_OF_MONTH, 1);
+        bottomSheet.setOnMonthSelectedListener(
+                (selectedMonth, selectedYear) -> {
 
-            calendarView.setMonth(displayedMonth);
-            updateMonthTitle();
-            loadCurrentMonth();
+                    displayedMonth.set(
+                            Calendar.YEAR,
+                            selectedYear);
 
-            if (hasActiveFilter()) {
-                applyActiveFilter();
-            } else if (isSameMonth(selectedDate, displayedMonth)) {
-                loadSelectedDate();
-            } else {
-                transactionAdapter.setItems(null);
-            }
-        });
+                    displayedMonth.set(
+                            Calendar.MONTH,
+                            selectedMonth - 1);
 
-        bottomSheet.show(getParentFragmentManager(), "MonthPickerBottomSheet");
+                    displayedMonth.set(
+                            Calendar.DAY_OF_MONTH,
+                            1);
+
+                    calendarView.setMonth(displayedMonth);
+
+                    updateMonthTitle();
+
+                    loadCurrentMonth();
+
+                    if (hasActiveFilter()) {
+
+                        applyActiveFilter();
+
+                    } else if (isSameMonth(
+                            selectedDate,
+                            displayedMonth)) {
+
+                        loadSelectedDate();
+
+                    } else {
+
+                        transactionAdapter.setItems(null);
+                    }
+                });
+
+        bottomSheet.show(
+                getParentFragmentManager(),
+                "MonthPickerBottomSheet");
     }
 
-    private void showEditTransactionBottomSheet(Transaction transaction) {
+    private void showEditTransactionBottomSheet(
+            Transaction transaction) {
+
         viewModel.resetTransactionAction();
         viewModel.resetDeleteAction();
 
         AddEditTransactionBottomSheet bottomSheet =
-                AddEditTransactionBottomSheet.newEditInstance(viewModel, transaction);
+                AddEditTransactionBottomSheet.newEditInstance(
+                        viewModel,
+                        transaction);
 
         bottomSheet.show(
                 getParentFragmentManager(),
@@ -238,20 +362,27 @@ public final class TransactionsFragment extends Fragment {
     }
 
     private void refreshAfterTransactionChanged() {
+
         loadCurrentMonth();
 
         if (hasActiveFilter()) {
+
             applyActiveFilter();
+
         } else {
+
             loadSelectedDate();
         }
     }
 
     private void showFilterBottomSheet() {
-        FilterTransactionsBottomSheet bottomSheet = new FilterTransactionsBottomSheet();
+
+        FilterTransactionsBottomSheet bottomSheet =
+                new FilterTransactionsBottomSheet();
 
         bottomSheet.setOnFilterAppliedListener(
                 (fromDate, toDate, categoryId, type, keyword) -> {
+
                     activeFromDate = fromDate;
                     activeToDate = toDate;
                     activeCategoryId = categoryId;
@@ -259,7 +390,9 @@ public final class TransactionsFragment extends Fragment {
                     activeKeyword = keyword;
 
                     if (!hasActiveFilter()) {
+
                         loadSelectedDate();
+
                         return;
                     }
 
@@ -272,6 +405,7 @@ public final class TransactionsFragment extends Fragment {
     }
 
     private void applyActiveFilter() {
+
         viewModel.filterTransactions(
                 activeFromDate,
                 activeToDate,
@@ -281,6 +415,7 @@ public final class TransactionsFragment extends Fragment {
     }
 
     private void clearActiveFilter() {
+
         activeFromDate = null;
         activeToDate = null;
         activeCategoryId = null;
@@ -289,6 +424,7 @@ public final class TransactionsFragment extends Fragment {
     }
 
     private boolean hasActiveFilter() {
+
         return activeFromDate != null
                 || activeToDate != null
                 || activeCategoryId != null
@@ -297,11 +433,19 @@ public final class TransactionsFragment extends Fragment {
     }
 
     private void loadCurrentMonth() {
-        Calendar firstDay = (Calendar) displayedMonth.clone();
-        firstDay.set(Calendar.DAY_OF_MONTH, 1);
 
-        Calendar firstDayNextMonth = (Calendar) firstDay.clone();
-        firstDayNextMonth.add(Calendar.MONTH, 1);
+        Calendar firstDay = (Calendar) displayedMonth.clone();
+
+        firstDay.set(
+                Calendar.DAY_OF_MONTH,
+                1);
+
+        Calendar firstDayNextMonth =
+                (Calendar) firstDay.clone();
+
+        firstDayNextMonth.add(
+                Calendar.MONTH,
+                1);
 
         viewModel.loadMonth(
                 formatApiDate(firstDay),
@@ -309,48 +453,74 @@ public final class TransactionsFragment extends Fragment {
     }
 
     private void loadSelectedDate() {
-        viewModel.loadByDate(formatApiDate(selectedDate));
+
+        viewModel.loadByDate(
+                formatApiDate(selectedDate));
     }
 
     private void changeMonth(int amount) {
-        displayedMonth.add(Calendar.MONTH, amount);
+
+        displayedMonth.add(
+                Calendar.MONTH,
+                amount);
 
         calendarView.setMonth(displayedMonth);
+
         updateMonthTitle();
+
         loadCurrentMonth();
 
         if (hasActiveFilter()) {
+
             applyActiveFilter();
-        } else if (isSameMonth(selectedDate, displayedMonth)) {
+
+        } else if (isSameMonth(
+                selectedDate,
+                displayedMonth)) {
+
             loadSelectedDate();
+
         } else {
+
             transactionAdapter.setItems(null);
         }
     }
 
-    private boolean isSameMonth(Calendar first, Calendar second) {
-        return first.get(Calendar.YEAR) == second.get(Calendar.YEAR)
-                && first.get(Calendar.MONTH) == second.get(Calendar.MONTH);
+    private boolean isSameMonth(
+            Calendar first,
+            Calendar second) {
+
+        return first.get(Calendar.YEAR)
+                == second.get(Calendar.YEAR)
+                && first.get(Calendar.MONTH)
+                == second.get(Calendar.MONTH);
     }
 
     private void updateMonthTitle() {
-        SimpleDateFormat format = new SimpleDateFormat(
-                "MMMM yyyy",
-                new Locale("vi", "VN"));
 
-        String title = format.format(displayedMonth.getTime());
+        SimpleDateFormat format =
+                new SimpleDateFormat(
+                        "MMMM yyyy",
+                        new Locale("vi", "VN"));
 
-        title = title.substring(0, 1).toUpperCase(Locale.getDefault())
+        String title = format.format(
+                displayedMonth.getTime());
+
+        title = title.substring(0, 1)
+                .toUpperCase(Locale.getDefault())
                 + title.substring(1);
 
         tvCurrentMonth.setText(title);
     }
 
     private String formatApiDate(Calendar calendar) {
-        SimpleDateFormat format = new SimpleDateFormat(
-                "yyyy-MM-dd",
-                Locale.US);
 
-        return format.format(calendar.getTime());
+        SimpleDateFormat format =
+                new SimpleDateFormat(
+                        "yyyy-MM-dd",
+                        Locale.US);
+
+        return format.format(
+                calendar.getTime());
     }
 }
