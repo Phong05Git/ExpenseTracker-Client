@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout
@@ -8,6 +9,8 @@
     android:background="@color/light_background"
     android:orientation="vertical"
     android:padding="16dp">
+
+    <!-- Header -->
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -45,16 +48,20 @@
         android:textColor="@color/light_text_secondary"
         android:textSize="14sp" />
 
+    <!-- System categories -->
+
     <LinearLayout
         android:id="@+id/rowSystemCategoriesHeader"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="56dp"
         android:layout_marginTop="20dp"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="4dp">
 
         <TextView
             android:layout_width="0dp"
@@ -83,15 +90,19 @@
         android:nestedScrollingEnabled="false"
         android:visibility="gone" />
 
+    <!-- User categories -->
+
     <LinearLayout
         android:id="@+id/rowUserCategoriesHeader"
         android:layout_width="match_parent"
-        android:layout_height="52dp"
+        android:layout_height="56dp"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="4dp">
 
         <TextView
             android:layout_width="0dp"

@@ -1,3 +1,4 @@
+
 package com.example.expensetracker.presentation.ui.fragment.category;
 
 import android.os.Bundle;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.expensetracker.R;
+import com.example.expensetracker.domain.common.Resource;
 import com.example.expensetracker.domain.model.Category;
 import com.example.expensetracker.presentation.adapter.CategoryAdapter;
 import com.example.expensetracker.presentation.dialog.ConfirmDeleteDialog;
@@ -30,33 +32,59 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class CategoriesFragment extends Fragment {
 
     private CategoryViewModel viewModel;
+
     private CategoryAdapter systemAdapter;
     private CategoryAdapter userAdapter;
+
     private RecyclerView recyclerSystemCategories;
     private RecyclerView recyclerUserCategories;
+
     private View rowSystemCategoriesHeader;
     private View rowUserCategoriesHeader;
+
     private TextView tvSystemCategoriesArrow;
     private TextView tvUserCategoriesArrow;
+
     private boolean systemCategoriesExpanded = false;
     private boolean userCategoriesExpanded = true;
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_categories, container, false);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+
+        return inflater.inflate(
+                R.layout.fragment_categories,
+                container,
+                false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(
+            @NonNull View view,
+            @Nullable Bundle savedInstanceState) {
+
         super.onViewCreated(view, savedInstanceState);
 
-        recyclerSystemCategories = view.findViewById(R.id.recyclerSystemCategories);
-        recyclerUserCategories = view.findViewById(R.id.recyclerUserCategories);
-        rowSystemCategoriesHeader = view.findViewById(R.id.rowSystemCategoriesHeader);
-        rowUserCategoriesHeader = view.findViewById(R.id.rowUserCategoriesHeader);
-        tvSystemCategoriesArrow = view.findViewById(R.id.tvSystemCategoriesArrow);
-        tvUserCategoriesArrow = view.findViewById(R.id.tvUserCategoriesArrow);
+        recyclerSystemCategories =
+                view.findViewById(R.id.recyclerSystemCategories);
+
+        recyclerUserCategories =
+                view.findViewById(R.id.recyclerUserCategories);
+
+        rowSystemCategoriesHeader =
+                view.findViewById(R.id.rowSystemCategoriesHeader);
+
+        rowUserCategoriesHeader =
+                view.findViewById(R.id.rowUserCategoriesHeader);
+
+        tvSystemCategoriesArrow =
+                view.findViewById(R.id.tvSystemCategoriesArrow);
+
+        tvUserCategoriesArrow =
+                view.findViewById(R.id.tvUserCategoriesArrow);
 
         systemAdapter = new CategoryAdapter(
                 requireContext(),
@@ -75,6 +103,9 @@ public class CategoriesFragment extends Fragment {
 
         recyclerUserCategories.setLayoutManager(
                 new LinearLayoutManager(requireContext()));
+
+        recyclerSystemCategories.setNestedScrollingEnabled(false);
+        recyclerUserCategories.setNestedScrollingEnabled(false);
 
         recyclerSystemCategories.setAdapter(systemAdapter);
         recyclerUserCategories.setAdapter(userAdapter);
@@ -105,14 +136,17 @@ public class CategoriesFragment extends Fragment {
     }
 
     private void observeViewModel() {
+
         viewModel.getCategories().observe(
                 getViewLifecycleOwner(),
                 resource -> {
+
                     if (resource == null) {
                         return;
                     }
 
                     switch (resource.getStatus()) {
+
                         case SUCCESS:
                             splitCategories(resource.getData());
                             break;
@@ -134,15 +168,19 @@ public class CategoriesFragment extends Fragment {
         viewModel.getCategoryAction().observe(
                 getViewLifecycleOwner(),
                 resource -> {
+
                     if (resource == null) {
                         return;
                     }
 
-                    if (resource.getStatus() == com.example.expensetracker.domain.common.Resource.Status.ERROR) {
+                    if (resource.getStatus()
+                            == Resource.Status.ERROR) {
+
                         Toast.makeText(
                                 requireContext(),
                                 resource.getMessage(),
                                 Toast.LENGTH_LONG).show();
+
                         viewModel.resetCategoryAction();
                     }
                 });
@@ -150,11 +188,13 @@ public class CategoriesFragment extends Fragment {
         viewModel.getDeleteAction().observe(
                 getViewLifecycleOwner(),
                 resource -> {
+
                     if (resource == null) {
                         return;
                     }
 
                     switch (resource.getStatus()) {
+
                         case SUCCESS:
                             Toast.makeText(
                                     requireContext(),
@@ -183,11 +223,14 @@ public class CategoriesFragment extends Fragment {
     }
 
     private void splitCategories(List<Category> categories) {
+
         List<Category> systemCategories = new ArrayList<>();
         List<Category> userCategories = new ArrayList<>();
 
         if (categories != null) {
+
             for (Category category : categories) {
+
                 if (category.getUserId() == null) {
                     systemCategories.add(category);
                 } else {
@@ -201,33 +244,43 @@ public class CategoriesFragment extends Fragment {
     }
 
     private void toggleSystemCategories() {
+
         setSystemCategoriesExpanded(
                 !systemCategoriesExpanded);
     }
 
     private void toggleUserCategories() {
+
         setUserCategoriesExpanded(
                 !userCategoriesExpanded);
     }
 
-    private void setSystemCategoriesExpanded(boolean expanded) {
+    private void setSystemCategoriesExpanded(
+            boolean expanded) {
+
         systemCategoriesExpanded = expanded;
+
         recyclerSystemCategories.setVisibility(
                 expanded
                         ? View.VISIBLE
                         : View.GONE);
+
         tvSystemCategoriesArrow.setText(
                 expanded
                         ? "⌃"
                         : "⌄");
     }
 
-    private void setUserCategoriesExpanded(boolean expanded) {
+    private void setUserCategoriesExpanded(
+            boolean expanded) {
+
         userCategoriesExpanded = expanded;
+
         recyclerUserCategories.setVisibility(
                 expanded
                         ? View.VISIBLE
                         : View.GONE);
+
         tvUserCategoriesArrow.setText(
                 expanded
                         ? "⌃"
@@ -235,6 +288,7 @@ public class CategoriesFragment extends Fragment {
     }
 
     private void showCreateCategory() {
+
         viewModel.resetCategoryAction();
 
         AddEditCategoryBottomSheet sheet =
@@ -246,11 +300,14 @@ public class CategoriesFragment extends Fragment {
     }
 
     private void onCategoryClick(Category category) {
+
         if (category.getUserId() == null) {
+
             Toast.makeText(
                     requireContext(),
                     "Danh mục hệ thống chỉ được xem.",
                     Toast.LENGTH_SHORT).show();
+
             return;
         }
 
@@ -258,11 +315,14 @@ public class CategoriesFragment extends Fragment {
     }
 
     private void onCategoryEdit(Category category) {
+
         if (category.getUserId() == null) {
+
             Toast.makeText(
                     requireContext(),
                     "Danh mục hệ thống không thể sửa.",
                     Toast.LENGTH_SHORT).show();
+
             return;
         }
 
@@ -278,20 +338,23 @@ public class CategoriesFragment extends Fragment {
     }
 
     private void onCategoryDelete(Category category) {
+
         if (category.getUserId() == null) {
+
             Toast.makeText(
                     requireContext(),
                     "Danh mục hệ thống không thể xóa.",
                     Toast.LENGTH_SHORT).show();
+
             return;
         }
 
         ConfirmDeleteDialog.show(
                 requireContext(),
                 "Xóa danh mục",
-                "Bạn có chắc muốn xóa danh mục \"" +
-                        category.getName() +
-                        "\"?",
+                "Bạn có chắc muốn xóa danh mục \""
+                        + category.getName()
+                        + "\"?",
                 () -> viewModel.deleteCategory(
                         category.getId()));
     }
