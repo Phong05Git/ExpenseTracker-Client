@@ -73,7 +73,13 @@ public final class NetworkModule {
     @Singleton
     static HttpLoggingInterceptor provideHttpLoggingInterceptor() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
+
+        interceptor.setLevel(
+                com.example.expensetracker.BuildConfig.DEBUG
+                        ? HttpLoggingInterceptor.Level.BASIC
+                        : HttpLoggingInterceptor.Level.NONE
+        );
+
         return interceptor;
     }
 
