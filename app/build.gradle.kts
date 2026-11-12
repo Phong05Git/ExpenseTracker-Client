@@ -1,3 +1,4 @@
+
 plugins {
     id("com.android.application")
     id("com.google.dagger.hilt.android")
@@ -27,11 +28,34 @@ android {
 
     buildTypes {
         debug {
+            buildConfigField(
+                "String",
+                "API_BASE_URL",
+                "\"http://10.0.2.2:5080/\""
+            )
+
+            buildConfigField(
+                "boolean",
+                "API_PINNING_ENABLED",
+                "false"
+            )
         }
 
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+
+            buildConfigField(
+                "String",
+                "API_BASE_URL",
+                "\"https://expensetracker-api-b1xz.onrender.com/\""
+            )
+
+            buildConfigField(
+                "boolean",
+                "API_PINNING_ENABLED",
+                "true"
+            )
 
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
