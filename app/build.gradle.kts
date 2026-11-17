@@ -31,7 +31,7 @@ android {
             buildConfigField(
                 "String",
                 "API_BASE_URL",
-                "\"http://10.0.2.2:5080/\""
+                "\"http://localhost:5080/\""
             )
 
             buildConfigField(

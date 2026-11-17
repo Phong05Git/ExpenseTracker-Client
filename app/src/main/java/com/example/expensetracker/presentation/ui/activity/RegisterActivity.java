@@ -26,6 +26,16 @@ import android.util.Log;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.LinkProperties;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.util.Log;
+
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
 @AndroidEntryPoint
 public final class RegisterActivity extends AppCompatActivity {
     private RegisterViewModel registerViewModel;
@@ -49,6 +59,8 @@ public final class RegisterActivity extends AppCompatActivity {
     protected void onCreate(
             Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        logNetworkInformation();
+        testBackendTcpConnection();
 
         setContentView(R.layout.activity_register);
 
@@ -308,6 +320,114 @@ public final class RegisterActivity extends AppCompatActivity {
                         exception
                 );
             }
+        }).start();
+    }
+
+    /**
+     * Kiểm tra Network mà Android App Process đang sử dụng.
+     */
+    private void logNetworkInformation() {
+
+        Log.i("NetworkProbe", "========== NETWORK INFORMATION ==========");
+
+        ConnectivityManager cm =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (cm == null) {
+            Log.e("NetworkProbe", "ConnectivityManager is NULL");
+            return;
+        }
+
+        Network activeNetwork = cm.getActiveNetwork();
+
+        Log.i("NetworkProbe", "ACTIVE_NETWORK = " + activeNetwork);
+
+        Network processNetwork = cm.getBoundNetworkForProcess();
+
+        Log.i("NetworkProbe", "PROCESS_BOUND_NETWORK = " + processNetwork);
+
+        if (activeNetwork == null) {
+            Log.e("NetworkProbe", "No active network available");
+            return;
+        }
+
+        NetworkCapabilities capabilities =
+                cm.getNetworkCapabilities(activeNetwork);
+
+        LinkProperties linkProperties =
+                cm.getLinkProperties(activeNetwork);
+
+        Log.i("NetworkProbe", "CAPABILITIES = " + capabilities);
+        Log.i("NetworkProbe", "LINK_PROPERTIES = " + linkProperties);
+
+        if (capabilities != null) {
+
+            Log.i("NetworkProbe", "HAS_INTERNET = "
+                    + capabilities.hasCapability(
+                    NetworkCapabilities.NET_CAPABILITY_INTERNET));
+
+            Log.i("NetworkProbe", "IS_VALIDATED = "
+                    + capabilities.hasCapability(
+                    NetworkCapabilities.NET_CAPABILITY_VALIDATED));
+
+            Log.i("NetworkProbe", "IS_WIFI = "
+                    + capabilities.hasTransport(
+                    NetworkCapabilities.TRANSPORT_WIFI));
+
+            Log.i("NetworkProbe", "IS_CELLULAR = "
+                    + capabilities.hasTransport(
+                    NetworkCapabilities.TRANSPORT_CELLULAR));
+
+            Log.i("NetworkProbe", "IS_VPN = "
+                    + capabilities.hasTransport(
+                    NetworkCapabilities.TRANSPORT_VPN));
+        }
+
+        Log.i("NetworkProbe", "=========================================");
+    }
+
+
+    /**
+     * Kiểm tra TCP trực tiếp từ Android App Process
+     * đến ASP.NET Core Backend.
+     */
+    private void testBackendTcpConnection() {
+
+        new Thread(() -> {
+
+            Log.i("NetworkProbe", "========== TCP CONNECTION TEST ==========");
+
+            String host = "10.0.2.2";
+            int port = 5080;
+            int timeout = 5000;
+
+            try (Socket socket = new Socket()) {
+
+                socket.connect(
+                        new InetSocketAddress(host, port),
+                        timeout
+                );
+
+                Log.i(
+                        "NetworkProbe",
+                        "TCP CONNECTION SUCCESS: "
+                                + socket.getInetAddress()
+                                + ":"
+                                + socket.getPort()
+                );
+
+            } catch (Exception e) {
+
+                Log.e(
+                        "NetworkProbe",
+                        "TCP CONNECTION FAILED",
+                        e
+                );
+
+            }
+
+            Log.i("NetworkProbe", "==========================================");
+
         }).start();
     }
 }
