@@ -3,6 +3,7 @@ package com.example.expensetracker.di;
 import com.example.expensetracker.data.remote.api.AuthApi;
 import com.example.expensetracker.data.remote.api.BudgetApi;
 import com.example.expensetracker.data.remote.api.CategoryApi;
+import com.example.expensetracker.data.remote.api.ChatApi;
 import com.example.expensetracker.data.remote.api.RefreshAuthApi;
 import com.example.expensetracker.data.remote.api.ReportApi;
 import com.example.expensetracker.data.remote.api.TransactionApi;
@@ -146,5 +147,11 @@ public final class NetworkModule {
     @Singleton
     static BudgetApi provideBudgetApi(Retrofit retrofit) {
         return retrofit.create(BudgetApi.class);
+    }
+
+    @Provides
+    @Singleton
+    static ChatApi provideChatApi(Retrofit retrofit) {
+        return retrofit.create(ChatApi.class);
     }
 }

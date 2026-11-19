@@ -1,0 +1,434 @@
+EXPENSETRACKER - PHASE 2 MASTER CHECKLIST
+Version: 1.0
+Updated: 2026-11-17
+Purpose: Progress tracking and context recovery across conversations.
+
+============================================================
+HOW TO TRACK
+============================================================
+[+] = Completed and verified with evidence.
+[ ] = Not completed, not started, or not yet verified.
+[~] = In progress (use only when a task is actively being worked on).
+
+Rules:
+1. Mark [+] only after the implementation/build/test result is confirmed.
+2. "Code written" is not the same as "built"; "built" is not the same as "tested".
+3. Keep evidence: changed files, commands, test cases, output, screenshots/logs.
+4. At the start of a resumed task, read this checklist and verify the latest source.
+5. Do not assume this checklist proves the current working tree has not changed.
+6. Update this file after each completed milestone.
+
+============================================================
+A. PROJECT SCOPE AND FIXED CONSTRAINTS
+============================================================
+[+] Phase 2 has three main directions:
+    - Admin Management System.
+    - Move Backend and PostgreSQL from Render to Localhost; manage TLS
+      certificates and Android Certificate Pinning.
+    - Local AI financial chatbot and AI-specific security controls.
+
+[+] Phase 1 remains the baseline; do not rewrite stable existing features.
+[+] Current stack baseline: Android Java 17; ASP.NET Core 10;
+    EF Core 10; PostgreSQL; Android MVVM + Clean Architecture;
+    Backend layered architecture.
+[+] Backend must enforce authentication, authorization and data ownership.
+[+] Never trust a UserId supplied by Android or extracted from a prompt.
+[+] Local LLM must not connect directly to PostgreSQL and must not receive
+    database credentials.
+[+] Backend retrieves and scopes financial data before preparing AI context.
+[+] Prompt instructions/keyword filters are not authorization controls.
+[+] Do not store secrets, passwords, tokens, connection strings or private
+    keys in source code, prompts, logs or public documents.
+[+] No default expansion into bank payment, direct bank account integration,
+    QR Payment, Blockchain, group finance or enterprise finance.
+
+============================================================
+B. PHASE 0 - BASELINE REVIEW AND PROJECT CONTROL
+============================================================
+[+] B.01 Read the Phase 2 Project Baseline document.
+[+] B.02 Review the final report as the Phase 1 completion reference.
+[+] B.03 Review the proposed specialist-project outline and align the
+        planned outcomes with its objectives.
+[+] B.04 Inspect Android chatbot screen/layout and relevant Android
+        architecture conventions.
+[+] B.05 Inspect Backend User entity, BaseEntity, ApplicationDbContext,
+        EF configuration conventions and project dependencies.
+[ ] B.06 Re-check the complete current Android source tree before broad
+        Android changes.
+[ ] B.07 Re-check the complete current Backend source tree before broad
+        Backend changes.
+[ ] B.08 Verify the actual PostgreSQL database, schema and migration history
+        against the current EF Core model. Do not infer this only from source.
+[ ] B.09 Verify current Render configuration, environment variables and
+        deployment settings without exposing secrets.
+[ ] B.10 Record a recoverable baseline: source revision/archive, database
+         backup, dependency versions and current build/test results.
+Exit criteria:
+- Current source and database state are known.
+- Differences between report, plan and implementation are recorded.
+- A rollback/backup point exists before schema or deployment changes.
+
+============================================================
+C. PHASE 1 - LOCAL INFRASTRUCTURE, DATABASE AND TLS
+============================================================
+C.1 PostgreSQL Local
+[ ] C.1.01 Confirm PostgreSQL version and local installation requirements.
+[ ] C.1.02 Define local database/user with least required privileges.
+[ ] C.1.03 Create local database without overwriting the existing Render DB.
+[ ] C.1.04 Decide whether to migrate existing test data or recreate it.
+[ ] C.1.05 Export/backup source data when migration is required.
+[ ] C.1.06 Apply EF Core migrations to the local database.
+[ ] C.1.07 Verify schema, indexes, constraints and foreign keys.
+[ ] C.1.08 Verify row counts and data integrity after migration/import.
+[ ] C.1.09 Create and test database backup and restore procedures.
+[ ] C.1.10 Document how to reset/recreate test data safely.
+
+C.2 Backend Local
+[ ] C.2.01 Inspect current Program.cs, Kestrel and configuration providers.
+[ ] C.2.02 Separate Development and Release configuration.
+[ ] C.2.03 Move secrets to environment variables or a suitable secret store.
+[ ] C.2.04 Configure the Backend to use the local PostgreSQL connection.
+[ ] C.2.05 Configure listening interfaces and ports intentionally.
+[ ] C.2.06 Run the API locally and verify health/startup/migrations.
+[ ] C.2.07 Verify existing authentication and business APIs.
+[ ] C.2.08 Verify logs do not expose credentials or sensitive financial data.
+
+C.3 TLS and Certificate Lifecycle
+[ ] C.3.01 Decide the certificate trust model for LAN/emulator/physical device.
+[ ] C.3.02 Compare development certificate, private CA and public CA options.
+[ ] C.3.03 Select hostname/IP strategy and ensure certificate SAN matches it.
+[ ] C.3.04 Create and protect CA/server private keys where applicable.
+[ ] C.3.05 Configure HTTPS on Kestrel.
+[ ] C.3.06 Configure Android trust appropriately without Trust-All behavior.
+[ ] C.3.07 Preserve certificate-chain and hostname verification.
+[ ] C.3.08 Document certificate renewal, replacement and revocation.
+[ ] C.3.09 Calculate SHA-256 SPKI pin for the intended server identity.
+[ ] C.3.10 Replace Render pin with the Local environment pin.
+[ ] C.3.11 Define backup pin / pin-rotation procedure.
+[ ] C.3.12 Separate Debug and Release pin/configuration safely.
+
+C.4 Android and Local Connectivity
+[ ] C.4.01 Inspect existing Base URL configuration and build variants.
+[ ] C.4.02 Configure Android Emulator access to the host machine.
+[ ] C.4.03 Configure physical Android device access over LAN.
+[ ] C.4.04 Verify the device and host are on a reachable network.
+[ ] C.4.05 Remove unintended Render references from Local configuration.
+[ ] C.4.06 Verify HTTPS connection and pinning on Emulator.
+[ ] C.4.07 Verify HTTPS connection and pinning on physical device.
+[ ] C.4.08 Verify invalid certificate/hostname/pin is rejected.
+[ ] C.4.09 Perform controlled MITM test with Burp Suite.
+[ ] C.4.10 Verify the app still works after server/certificate restart.
+
+Exit criteria:
+- Android, Backend and PostgreSQL operate locally.
+- Local mode does not depend on Render.
+- HTTPS and Certificate Pinning are verified, including negative cases.
+- Database backup and restore are demonstrated.
+
+============================================================
+D. PHASE 2 - ADMIN BACKEND AND RBAC
+============================================================
+D.1 Requirements and Authorization Design
+[ ] D.1.01 Define Admin and User roles and their allowed actions.
+[ ] D.1.02 Decide whether permissions are role-based only or role +
+         granular permissions, based on actual requirements.
+[ ] D.1.03 Inspect existing User/Auth/JWT/RefreshToken implementation.
+[ ] D.1.04 Decide safe Admin provisioning; no public Admin self-registration.
+[ ] D.1.05 Define Admin session lifecycle and revocation behavior.
+[ ] D.1.06 Define which aggregate metrics Admin may view.
+[ ] D.1.07 Explicitly prevent default access to users' private financial data.
+
+D.2 Database and Domain
+[ ] D.2.01 Design role/permission persistence based on current domain model.
+[ ] D.2.02 Identify the minimum required schema changes.
+[ ] D.2.03 Add domain entities/value objects and navigation properties.
+[ ] D.2.04 Add EF Core configurations and constraints.
+[ ] D.2.05 Create and inspect migration before applying it.
+[ ] D.2.06 Apply migration to a test database and verify rollback strategy.
+[ ] D.2.07 Provision the first Admin securely.
+[ ] D.2.08 Verify existing User accounts and Phase 1 data remain valid.
+
+D.3 Backend Authorization
+[ ] D.3.01 Implement server-side role/permission authorization.
+[ ] D.3.02 Add authorization policies for Admin endpoints.
+[ ] D.3.03 Ensure User tokens cannot access Admin endpoints.
+[ ] D.3.04 Ensure client-supplied role/isAdmin/UserId is never trusted.
+[ ] D.3.05 Review default authorization behavior and anonymous endpoints.
+[ ] D.3.06 Verify ownership checks remain enforced on personal resources.
+
+D.4 Admin APIs
+[ ] D.4.01 API: list users with pagination.
+[ ] D.4.02 API: search/filter users.
+[ ] D.4.03 API: view permitted basic user details.
+[ ] D.4.04 API: lock/unlock or activate/deactivate accounts.
+[ ] D.4.05 API: manage assigned roles/permissions.
+[ ] D.4.06 API: revoke user sessions/refresh tokens.
+[ ] D.4.07 API: list system categories.
+[ ] D.4.08 API: create/update system categories.
+[ ] D.4.09 API: deactivate/reactivate system categories safely.
+[ ] D.4.10 API: expose permitted aggregate dashboard metrics.
+
+D.5 Audit and Security
+[ ] D.5.01 Design audit event fields and retention policy.
+[ ] D.5.02 Record Admin login/security-relevant events.
+[ ] D.5.03 Record account status and role/permission changes.
+[ ] D.5.04 Record sensitive configuration changes.
+[ ] D.5.05 Exclude passwords, tokens, secrets and unnecessary financial data.
+[ ] D.5.06 Test User -> Admin endpoint access (must be denied).
+[ ] D.5.07 Test missing/expired/invalid token behavior.
+[ ] D.5.08 Test IDOR/Broken Access Control and privilege escalation.
+[ ] D.5.09 Test unauthorized role assignment and self-escalation.
+[ ] D.5.10 Test account lock and session revocation behavior.
+
+Exit criteria:
+- Admin and User are separated and enforced by Backend.
+- Admin APIs work with least privilege.
+- Sensitive actions create safe audit records.
+- Direct API authorization tests pass.
+
+============================================================
+E. PHASE 3 - ADMIN WEB PORTAL
+============================================================
+[ ] E.01 Inspect existing repository/tooling before selecting frontend stack.
+[ ] E.02 Select Admin Portal technology based on maintainability and fit.
+[ ] E.03 Define independent Admin Portal structure and environment config.
+[ ] E.04 Implement Admin login and session handling.
+[ ] E.05 Implement protected routing and role-aware navigation.
+[ ] E.06 Implement Dashboard with permitted aggregate metrics.
+[ ] E.07 Implement user list, pagination, search and filtering.
+[ ] E.08 Implement permitted user detail view.
+[ ] E.09 Implement lock/unlock and activation controls.
+[ ] E.10 Implement role/permission management UI.
+[ ] E.11 Implement system category management UI.
+[ ] E.12 Implement audit log viewer and filters.
+[ ] E.13 Integrate Portal with secured Backend APIs.
+[ ] E.14 Handle expiry, revoked sessions and authorization failures.
+[ ] E.15 Test that hiding a UI control is not the only authorization layer.
+[ ] E.16 Test Admin Portal usability and responsive layout.
+[ ] E.17 Build and verify Portal deployment in the local environment.
+
+Exit criteria:
+- Admin can manage the permitted system functions through a separate UI.
+- User cannot access Admin pages or APIs.
+- Backend authorization remains authoritative.
+
+============================================================
+F. PHASE 4 - LOCAL AI INFRASTRUCTURE
+============================================================
+F.1 Runtime and Model Selection
+[ ] F.1.01 Record actual CPU, RAM, GPU and VRAM available to the host.
+[ ] F.1.02 Compare suitable local runtimes (e.g. Ollama, llama.cpp or peers).
+[ ] F.1.03 Shortlist models based on hardware constraints.
+[ ] F.1.04 Benchmark RAM/VRAM use, tokens/sec and startup time.
+[ ] F.1.05 Evaluate Vietnamese response quality.
+[ ] F.1.06 Evaluate financial reasoning and numerical reliability.
+[ ] F.1.07 Select runtime/model based on measured results, not assumptions.
+[ ] F.1.08 Document model version, quantization and runtime configuration.
+
+F.2 Runtime Isolation
+[ ] F.2.01 Run Local LLM on the host machine.
+[ ] F.2.02 Bind the model service to a restricted local interface.
+[ ] F.2.03 Prevent direct Android/public-network access to model endpoints.
+[ ] F.2.04 Allow only the Backend to communicate with the model runtime.
+[ ] F.2.05 Protect model files and runtime configuration.
+[ ] F.2.06 Verify the model runtime has no PostgreSQL credentials.
+[ ] F.2.07 Verify the model runtime cannot connect directly to PostgreSQL.
+
+F.3 Backend AI Orchestrator
+[ ] F.3.01 Define AI service interfaces in the existing layered architecture.
+[ ] F.3.02 Implement the Backend-to-LLM client with timeout/cancellation.
+[ ] F.3.03 Implement model availability and health checks.
+[ ] F.3.04 Implement controlled concurrency and failure handling.
+[ ] F.3.05 Implement a financial data service scoped to authenticated User.
+[ ] F.3.06 Aggregate only the data required for each question.
+[ ] F.3.07 Define context size and data minimization rules.
+[ ] F.3.08 Implement Context Builder separately from persistence access.
+[ ] F.3.09 Define safe behavior when model is stopped, slow or unavailable.
+[ ] F.3.10 Verify AI runtime cannot bypass Backend authorization.
+
+Exit criteria:
+- Backend can invoke Local LLM.
+- LLM receives only Backend-prepared context.
+- No direct database access or database secrets are available to LLM.
+
+============================================================
+G. PHASE 5 - CHATBOT AND AI SECURITY
+============================================================
+G.1 Android Chatbot - UI-5.1
+[+] UI-5.1.1 Inspect existing chatbot Fragment/layout and Android patterns.
+[+] UI-5.1.2 Add ChatSession/ChatMessage domain models and request/response DTOs.
+        Files in patch:
+        - domain/model/ChatSession.java
+        - domain/model/ChatMessage.java
+        - data/remote/dto/chatbot/ChatSessionDto.java
+        - data/remote/dto/chatbot/ChatMessageDto.java
+        - data/remote/dto/chatbot/CreateChatSessionRequestDto.java
+        - data/remote/dto/chatbot/SendChatMessageRequestDto.java
+        Standalone javac passed; user confirmed Android Gradle compile succeeded.
+[ ] UI-5.1.3 Implement Backend ChatSession/ChatMessage Domain Entities,
+        EF Core configurations, User navigation and migration.
+[ ] UI-5.1.4 Build and verify the Backend migration on a test database;
+        preserve all existing Phase 1 tables/data.
+[ ] UI-5.1.5 Implement secured Backend APIs for creating/listing sessions
+        and loading messages, scoped to the authenticated User.
+[ ] UI-5.1.6 Implement message persistence and integration boundary for
+        assistant responses; do not fake AI responses.
+[ ] UI-5.1.7 Add Android Chatbot API interface.
+[ ] UI-5.1.8 Add Android remote data source/repository implementation.
+[ ] UI-5.1.9 Add Domain repository/use cases following existing conventions.
+[ ] UI-5.1.10 Add ViewModel state/events/loading/error handling.
+[ ] UI-5.1.11 Implement message list/RecyclerView adapter.
+[ ] UI-5.1.12 Implement sending, loading, empty and error states.
+[ ] UI-5.1.13 Implement conversation list, create-new and reopen-old-session.
+[ ] UI-5.1.14 Implement safe retry and duplicate-send prevention.
+[ ] UI-5.1.15 Verify lifecycle/navigation behavior and history refresh.
+[ ] UI-5.1.16 Build Android and run end-to-end chat persistence tests.
+
+G.2 Backend Chat and AI Integration
+[ ] G.2.01 Define stable API contract for session/message operations.
+[ ] G.2.02 Validate message length, content and session ownership.
+[ ] G.2.03 Derive UserId exclusively from authenticated server context.
+[ ] G.2.04 Ensure a user cannot read/write another user's session/messages.
+[ ] G.2.05 Persist user and assistant messages with consistent ordering.
+[ ] G.2.06 Connect the message flow to AI Orchestrator.
+[ ] G.2.07 Build financial context from authorized data only.
+[ ] G.2.08 Use at least 3 months of history when sufficient data exists;
+         support 6/12 months only where useful and available.
+[ ] G.2.09 Distinguish factual data, derived observations and advice.
+[ ] G.2.10 Handle insufficient history without inventing figures.
+[ ] G.2.11 Keep chatbot read-only in the initial release.
+
+G.3 Prompt and Context Security
+[ ] G.3.01 Define System Prompt and policy boundaries.
+[ ] G.3.02 Treat transaction notes/category names as untrusted input.
+[ ] G.3.03 Defend against direct Prompt Injection attempts.
+[ ] G.3.04 Defend against Indirect Prompt Injection in financial records.
+[ ] G.3.05 Prevent disclosure of System Prompt/internal instructions.
+[ ] G.3.06 Minimize context and exclude unrelated/private fields.
+[ ] G.3.07 Prevent cross-user context mixing.
+[ ] G.3.08 Never rely on prompt text as an authorization mechanism.
+
+G.4 Output Security and Reliability
+[ ] G.4.01 Validate model output format and maximum size.
+[ ] G.4.02 Safely render output; do not execute model-generated HTML/JS.
+[ ] G.4.03 Handle malformed JSON/structured output.
+[ ] G.4.04 Handle unsupported, uncertain or ungrounded answers.
+[ ] G.4.05 Prevent fabricated financial values and unsupported conclusions.
+[ ] G.4.06 Clearly distinguish advice from verified financial records.
+[ ] G.4.07 Ensure AI cannot create/update/delete transactions or budgets.
+[ ] G.4.08 Ensure AI cannot change account settings or perform Admin actions.
+
+G.5 Abuse and Runtime Security
+[ ] G.5.01 Limit prompt length and message size.
+[ ] G.5.02 Limit context window and retrieved record count.
+[ ] G.5.03 Rate-limit chatbot requests.
+[ ] G.5.04 Apply model request timeout and cancellation.
+[ ] G.5.05 Limit concurrent model requests.
+[ ] G.5.06 Monitor and constrain CPU/RAM/VRAM usage.
+[ ] G.5.07 Handle model unavailable, timeout and malformed response.
+[ ] G.5.08 Prevent repeated oversized prompts/resource exhaustion.
+[ ] G.5.09 Ensure model runtime endpoints are not exposed externally.
+[ ] G.5.10 Review logs for prompt/data/token leakage.
+
+G.6 AI Security Test Cases
+[ ] G.6.01 Direct Prompt Injection.
+[ ] G.6.02 Indirect Prompt Injection via transaction/category text.
+[ ] G.6.03 System Prompt disclosure attempt.
+[ ] G.6.04 Data Leakage attempt.
+[ ] G.6.05 Cross-user data access attempt.
+[ ] G.6.06 Session ID substitution/IDOR.
+[ ] G.6.07 Insecure Output Handling / script-like output.
+[ ] G.6.08 Excessive Agency attempts.
+[ ] G.6.09 Oversized prompt and request flooding.
+[ ] G.6.10 Runtime unavailable/timeout/malformed output.
+[ ] G.6.11 Insufficient financial history and ambiguous questions.
+[ ] G.6.12 Verify all test results with evidence and expected outcomes.
+
+Exit criteria:
+- Chatbot uses real, authorized financial data through Backend.
+- Conversation history is persisted and isolated by owner.
+- Local LLM has no direct DB access.
+- Prompt, context, output and resource controls have test evidence.
+
+============================================================
+H. PHASE 6 - REGRESSION, SECURITY TESTING AND DELIVERY
+============================================================
+[ ] H.01 Re-run Phase 1 authentication tests.
+[ ] H.02 Re-run transaction/category/budget/report tests.
+[ ] H.03 Re-run Android notification parsing tests.
+[ ] H.04 Re-run Android security and release-build checks.
+[ ] H.05 Re-run Backend API validation and ownership tests.
+[ ] H.06 Test Admin role boundaries and sensitive operations.
+[ ] H.07 Test Local TLS, certificate validation and pinning.
+[ ] H.08 Test backup and restore.
+[ ] H.09 Test chatbot functionality and conversation ownership.
+[ ] H.10 Test AI security scenarios from section G.6.
+[ ] H.11 Measure response time and resource usage.
+[ ] H.12 Test restart/recovery of Backend, Database and AI runtime.
+[ ] H.13 Verify no secrets are committed or written to logs.
+[ ] H.14 Verify Android and Backend builds.
+[ ] H.15 Run automated tests and record actual results.
+[ ] H.16 Update architecture diagrams and database design.
+[ ] H.17 Document API contracts and environment configuration.
+[ ] H.18 Document local installation, certificate and pin rotation.
+[ ] H.19 Document test scenarios, evidence and limitations.
+[ ] H.20 Prepare final Phase 2 report and delivery archive.
+
+Final Phase 2 acceptance:
+[ ] Admin Portal and server-side RBAC work securely.
+[ ] Backend and PostgreSQL run locally without Render dependency.
+[ ] TLS and Certificate Pinning are controlled and tested.
+[ ] Local LLM powers the chatbot without direct DB access.
+[ ] AI security controls have reproducible test evidence.
+[ ] All Phase 1 features remain functional.
+[ ] Builds, tests, documentation and evidence are complete.
+
+============================================================
+I. CURRENT WORK POSITION / CONTEXT RECOVERY
+============================================================
+Current confirmed position as of 2026-11-17:
+[+] User confirmed Android Gradle build succeeded after integrating UI-5.1.2.
+[+] UI-5.1.2 contains Android models and DTOs listed in G.1.
+[+] Backend source archive has been inspected for User, BaseEntity,
+    ApplicationDbContext and EF Core configuration conventions.
+[ ] No ChatSession/ChatMessage Backend entities have been implemented yet.
+[ ] No ChatSessions/ChatMessages migration has been created/applied.
+[ ] No Chatbot API/repository/ViewModel integration has been completed.
+[ ] No Local LLM runtime has been selected or integrated.
+
+NEXT TASK:
+UI-5.1.3 - Backend Domain Entities + EF Core Configuration + Migration.
+
+Next-task guardrails:
+1. Reconfirm the current Backend working tree; the uploaded ZIP is a snapshot,
+   not proof that the user's current files are identical.
+2. Inspect the existing User, BaseEntity, ApplicationDbContext,
+   configuration classes and migration snapshot.
+3. Design ChatSession and ChatMessage fields/relationships against the
+   already-created Android DTO contract.
+4. Keep ownership on the Backend side; derive UserId from JWT context.
+5. Add only the required schema changes; do not recreate or alter Phase 1
+   tables without a demonstrated reason.
+6. Generate and inspect the migration before applying it.
+7. Build Backend and test migration against a disposable/test database first.
+8. Do not proceed to API implementation until the migration step is verified.
+
+============================================================
+J. DECISION NOTES / KNOWN CONSTRAINTS
+============================================================
+- Multiple chat sessions per user are required.
+- User can create a new conversation and reopen previous conversations.
+- Chat history is stored in PostgreSQL.
+- Android request DTOs intentionally do not contain UserId.
+- Proposed message roles are lowercase "user" and "assistant".
+- Session list DTO expects lastMessagePreview.
+- Date/time fields in Android DTOs are represented as ISO-8601 strings.
+- These DTOs are a proposed API contract; Backend responses must be aligned
+  with them before integration.
+- The current Android build was confirmed by the user; no claim is made here
+  that Backend migration/build/tests have passed.
+- Master plan order is Local Infrastructure -> Admin Backend -> Admin Portal
+  -> Local AI Infrastructure -> Chatbot/AI Security -> Final Testing.
+  Chatbot UI preparation has been started ahead of that order as an isolated
+  client-side task; this does not mean Local AI or Backend AI integration is
+  already implemented.
